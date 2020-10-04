@@ -28,16 +28,20 @@ static car_t *front = NULL;
  */
 int32_t lput(car_t *cp) {
 
+	if (cp == NULL) {	
+		return 1;
+	}
+	
 	if (front == NULL) {	//if list empty
-		front=cp;
-		return 0;
+		front = cp;
+		front->next = cp->next;
 	}
 	else {					//if list non-empty
-		cp->next=front;	 	//set cp->next to point to original front
-		front=cp;			//set cp as the new front
-		return 0;
+		cp->next = front->next;	 	//set cp->next to point to original front->next
+		front = cp;			//set cp as the new front
 	}
-
+	
+	return 0;
 }
 
 
