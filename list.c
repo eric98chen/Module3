@@ -34,7 +34,7 @@ int32_t lput(car_t *cp) {
 		front = cp;	
 	}
 	else {						//if list non-empty
-		cp->next = front->next;	//set cp->next to point to original front
+		cp->next = front;		//set cp->next to point to original front
 		front = cp;				//set cp as the new front
 	}
 	
