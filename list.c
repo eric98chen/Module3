@@ -10,22 +10,17 @@
  
 */ 
 
+
 #include <stdio.h>
 #include <stdint.h>
 #include "list.h"
 #include <string.h>
 
+
 #define MAXREG 10
 
-static car_t *front = NULL:
+static car_t *front = NULL;
 
-/* the representation of a car */
-typedef struct car {
-	struct car *next;
-	char plate[MAXREG];
-	double price;
-	int year;
-} car_t;
 
 
 /* put(): place a car at the beginning of the list
@@ -37,13 +32,10 @@ int32_t lput(car_t *cp) {
 		front=cp;
 		return 0;
 	}
-	else if {				//if list non-empty
+	else {					//if list non-empty
 		cp->next=front;	 	//set cp->next to point to original front
 		front=cp;			//set cp as the new front
 		return 0;
-	}
-	else {
-		return 1;
 	}
 
 }
@@ -53,17 +45,14 @@ int32_t lput(car_t *cp) {
  * return NULL if the list is empty
  */
 car_t *lget() {
-
-	car_t firstCar;
 	
 	if (front == NULL) {
 		return NULL;	
 	}
 	else {
-		firstCar = *front; //grabs car_t referenced by front
+		return front; //grabs pointer to first car in list
 	}
 	
-	return firstCar;
 }
 
 
@@ -90,7 +79,7 @@ car_t *lremove(char *platep) {
 	
 	for (p=front; p!=NULL; p=p->next) { //loop through list and find any car with matching plate	
 		
-		if (strcmp(p->plate,*platep)) { 
+		if (strcmp(p->plate,platep)) { 
 			if (p==front) {
 				front = p->next; //if first item matches, have front point to second item
 				return p; //return pointer to matching item
