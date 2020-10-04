@@ -51,6 +51,10 @@ int main (void) {
 	else {
 		printf("lput failed\n");
 	}
+	
+	
+	free(cp1);
+	free(cp2);
 
 	return 0;
 }

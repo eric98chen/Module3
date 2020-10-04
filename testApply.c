@@ -66,6 +66,11 @@ int main (void) {
 	for (p=cp3; p!=NULL; p=p->next) { //loops through list to make sure year is 0 for each car
 		printf("Car is: %s, %f, %d\n",p->plate, p->price, p->year);
 	}
+	
+	free(cp1);
+	free(cp2);
+	free(cp3);
+	free(p);
 
 	return 0;
 }

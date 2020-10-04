@@ -53,6 +53,9 @@ int main (void) {
 	printf("First car is: %s, %f, %d\n",first->plate, first->price, first->year);
 	printf("lget success\n");
 	
+	free(cp1);
+	free(cp2);
+	
 	return 0;
 }
 
