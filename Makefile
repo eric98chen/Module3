@@ -1,6 +1,6 @@
 CFLAGS=-Wall -pedantic -std=c11 -I. -g
 
-all:			test0 testPut testGet
+all:			test0 testPut testGet testApply
 
 list.o: 		list.c list.h
 				gcc $(CFLAGS) -c list.c
@@ -22,6 +22,12 @@ testGet.o:  	testGet.c list.h
 
 testGet:		testGet.o list.o
 				gcc $(CFLAGS) testGet.o list.o -o testGet
+				
+testApply.o:  	testApply.c list.h
+				gcc $(CFLAGS) -c testApply.c
+
+testApply:		testApply.o list.o
+				gcc $(CFLAGS) testApply.o list.o -o testApply
 
 clean:			
-				rm -f *.o test0 testPut testGet
+				rm -f *.o test0 testPut testGet testApply
