@@ -17,10 +17,7 @@
 #include <string.h>
 
 
-#define MAXREG 10
-
 static car_t *front = NULL;
-
 
 
 /* put(): place a car at the beginning of the list
@@ -29,18 +26,19 @@ static car_t *front = NULL;
 int32_t lput(car_t *cp) {
 
 	if (cp == NULL) {	
+		printf("cp is NULL\n");
 		return 1;
 	}
 	
 	if (front == NULL) {	//if list empty
-		front = cp;
-		front->next = cp->next;
+		front = cp;	
 	}
-	else {					//if list non-empty
-		cp->next = front->next;	 	//set cp->next to point to original front->next
-		front = cp;			//set cp as the new front
+	else {						//if list non-empty
+		cp->next = front->next;	//set cp->next to point to original front
+		front = cp;				//set cp as the new front
 	}
 	
+	printf("car added to list\n");
 	return 0;
 }
 
@@ -49,14 +47,17 @@ int32_t lput(car_t *cp) {
  * return NULL if the list is empty
  */
 car_t *lget() {
-	
-	if (front == NULL) {
-		return NULL;	
+
+	if (front==NULL) {
+		printf("list is empty\n");
+		return NULL;
 	}
 	else {
-		return front; //grabs pointer to first car in list
-	}
-	
+		printf("first car removed and returned\n");
+		car_t *firstCar = front;
+		front = front->next; //effectively removes first car from list
+		return firstCar; //returns first car
+	}	
 }
 
 
@@ -64,39 +65,59 @@ car_t *lget() {
 /* apply a function to every car in the list */
 void lapply(void (*fn)(car_t *cp)) {
 	
-	car_t *p; //create pointer to start looping through car_t list
-	
-	for (p=front; p!=NULL; p=p->next) { //loops through list and applies function fn to each item
-		fn(p);
+	if (fn==NULL) {
+		printf("Error. Function is NULL\n");
+	}
+	else {
+		printf("Applying function to every car.\n");
+		car_t *p; //create pointer to start looping through car_t list
+		for (p=front; p!=NULL; p=p->next) { //loops through list and applies function fn to each item
+			fn(p);
+		}
 	}
 
 }
-
 
 
 /* remove(): find, remove, and return any car with
  * the designated plate; return NULL if not present
  */
 car_t *lremove(char *platep) { 
+
+	if (platep==NULL) {
+		printf("Error. Invalid plate entry.\n");
+		return NULL;
+	}
 	
-	car_t *p, *f; //pointers to help loop through car_t list
+	car_t *p, *f; //pointers to help loop through list
 	
-	for (p=front; p!=NULL; p=p->next) { //loop through list and find any car with matching plate	
+	for (p=front; p!=NULL; p=p->next) { //loop through list and find car with matching plate	
 		
 		if (strcmp(p->plate,platep)) { 
-			if (p==front) {
-				front = p->next; //if first item matches, have front point to second item
-				return p; //return pointer to matching item
+			printf("match found!\n");
+			
+			if (p==front) { 		//if match is first item
+				front = p->next; 	//update front to point to second item
+				return p; 			//return pointer to first item
 			}
-			else { 	//assuming first item is not a match
-				f->next = p->next; //effectively removes matching item from list. If p is last item, the f->next becomes NULL
-				return p; //return pointer to matching item
-				//PROBLEM: only returns first matching car. Do we need to return pointer to linked-list of multiple matches?
+			else { 					//if match is not first item
+				f->next = p->next; 	//removes matching item from list. If p is last item, then f->next becomes NULL
+				return p; 			//return pointer to matching item
 			}
 		}
 		
-		f = p;
+		f = p; //f is always one behind p
 	}
 	
-	return NULL; //if goes through entire list and no matches occur, then return NULL
+	printf("no matches found\n");
+	return NULL; //if goes through entire list and no matches occur, then returns NULL
 }
+
+
+
+
+
+
+
+
+
