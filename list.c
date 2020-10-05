@@ -93,7 +93,7 @@ car_t *lremove(char *platep) {
 	
 	for (p=front; p!=NULL; p=p->next) { //loop through list and find car with matching plate	
 		
-		if (strcmp(p->plate,platep)) { 
+		if (strcmp(p->plate,platep) == 0) { 
 			printf("match found!\n");
 			
 			if (p==front) { 		//if match is first item

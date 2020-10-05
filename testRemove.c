@@ -95,6 +95,7 @@ int main(void) {
 	// TEST lremove with non-existing plate
 	cp0 = lremove("AAAAAA");
 	if (cp0 != NULL) {
+		printf("%s\n",cp0->plate);
 		fprintf(stderr, "Failed while removing non-existing plate.\n");
 		err_ct++;
 		return err_ct;
@@ -116,7 +117,7 @@ int main(void) {
 	
 	// TEST lremove at beginning of list
 	cp0 = lremove(cp4->plate);
-	if (carcmp(cp0,cp3)) {
+	if (carcmp(cp0,cp4)) {
 		fprintf(stderr, "Failed while removing from beginning of list.\n");
 		return 1;
 	}
