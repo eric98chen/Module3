@@ -59,14 +59,22 @@ int main (void) {
 
 	if (lput_return1==0 && lput_return2==0) {
 		printf("lput success\n"); //check if lput function worked
+		
+		free(cp1);
+		free(cp2);
+		free(p);
 		return 0;
 	}
 	else {
 		printf("lput failed\n");
+		
+		free(cp1);
+		free(cp2);
+		free(p);
 		return 1;
 	}
 
-	free(cp1);
-	free(cp2);
-
+	
+	
+	return 0;
 }
