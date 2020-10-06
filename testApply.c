@@ -74,6 +74,7 @@ int main (void) {
 	free(cp3);
 	free(p);
 
+	printf("lapply success\n");
 	return 0;
 }
 

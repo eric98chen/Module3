@@ -134,5 +134,6 @@ int main(void) {
 	free(cp3);
 	free(cp4);
 
+	printf("lremove success\n");
 	return 0;
 }
