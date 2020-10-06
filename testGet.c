@@ -75,7 +75,6 @@ int main (void) {
 	free(cp1);
 	free(cp2);
 	free(cpNull);
-	free(first);
 	
 	printf("lget success\n");
 	return 0;
