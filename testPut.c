@@ -68,5 +68,6 @@ int main (void) {
 
 	free(cp1);
 	free(cp2);
-
+	free(p);
+	
 }
