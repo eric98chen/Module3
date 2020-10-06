@@ -56,7 +56,10 @@ int main (void) {
 		printf("Car is: %s, %f, %d\n",p->plate, p->price, p->year);
 	}
 
-
+	free(cp1);
+ 	free(cp2);
+  free(p);
+		
 	if (lput_return1==0 && lput_return2==0) {
 		printf("lput success\n"); //check if lput function worked
 		return 0;
@@ -66,8 +69,4 @@ int main (void) {
 		return 1;
 	}
 
-	free(cp1);
-	free(cp2);
-	free(p);
-	
 }
