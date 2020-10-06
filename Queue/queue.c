@@ -7,20 +7,24 @@
  * Description: functions on queue_t object
 */ 
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "queue.h"
+#include <string.h>
 
 
 /* the queue representation is hidden from users of the module */
 typedef void queue_t;
 
-static queue_t *front, *back; //front and back pointers for queue
+//front and back pointers for queue
+static queue_t *front = NULL;
+static queue_t *back = NULL;
+
 
 /* create an empty queue */
 queue_t* qopen(void) {
 	queue_t *qp;
-	front = NULL; //initialize front and back as NULL since queue is still empty
-	back = NULL;
 	printf("Empty queue created\n");
 	return qp;
 }       
@@ -58,7 +62,8 @@ int32_t qput(queue_t *qp, void *elementp) {
 		front = elementp;
 	}
 	else {						//if list non-empty
-		back->next = elementp;	//joins new element into list
+		back->next = elementp;	//joins new element into list. 
+								//Works bc at this point, back should already be assigned to elementp object type
 		back = elementp;		//set new element as back of queue
 	}
 	
@@ -76,7 +81,7 @@ void* qget(queue_t *qp) {
 	}
 	else {
 		printf("First element removed and returned\n");
-		queue_t *firstElemet = front; //need this to keep track of first element as we update front
+		queue_t *firstElement = front; //need this to keep track of first element as we update front
 		front = front->next; //effectively removes first element from queue
 		return firstElement; //returns first element
 	}

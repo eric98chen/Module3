@@ -1,10 +1,10 @@
-/* queueTest.c -- tests functions of queue.h interface
+/* queueTest.c -- tests qopen, qclose, qput, and qget functions in queue.h interface
  *
  * Author: Eric Chen
- * Created: Mon Oct 5, 13:27:10 2020
+ * Created: Tues Oct 6
  * Version:
  *
- * Description: returns 0 if success, nonzero if error
+ * Description: returns 0 if success, nonzero if fail
  *
  */
  
@@ -55,16 +55,15 @@ void fn(car_t *cp) {
  
 int main (void) {
 
-	//MAKE QUEUE
+	//TEST QOPEN
 	queue_t *qp;
-	car_t *cp1, *cp2, *first;
-	
 	qp = qopen(); //returns pointer to newly created queue_t object
 	
+/*	//TEST QPUT
+	car_t *cp1, *cp2, *first;
 	cp1 = make_car(NULL,"2LLE50",20000.0,2014); //returns pointer to newly created car_t object
 	cp2 = make_car(NULL,"NNHS16",30000.0,2016);
 	
-	//TEST QPUT()
 	uint32_t qput_return = qput(qp,(void*)cp1); //puts car_t object into queue_t object
 
 	if (qput_return==0) {
@@ -80,12 +79,12 @@ int main (void) {
 	printf("First car is: %s, %f, %d\n",first->plate, first->price, first->year);
 	printf("qget success\n");
 	
-
+*/
+	
 	return 0;
 }
 
 
 
 
- 
  
