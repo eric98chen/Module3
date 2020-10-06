@@ -61,10 +61,12 @@ int main (void) {
 	
 	lapply(fn); //applies function fn to every car in the list
 
-	
 	car_t *p; //create pointer to start looping through car_t list
 	for (p=cp3; p!=NULL; p=p->next) { //loops through list to make sure year is 0 for each car
-		printf("Car is: %s, %f, %d\n",p->plate, p->price, p->year);
+		if(p->year != 0){
+			fprintf(stderr, "Failed while applying function to non-empty list\n");
+			return 1;	
+		}
 	}
 	
 	free(cp1);
