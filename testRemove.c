@@ -128,7 +128,7 @@ int main(void) {
 		fprintf(stderr, "Failed while removing last element from list.\n");
 		return 1;
 	}
-
+	
 	free(cp1);
 	free(cp2);
 	free(cp3);
