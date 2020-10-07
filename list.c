@@ -68,6 +68,9 @@ void lapply(void (*fn)(car_t *cp)) {
 	if (fn==NULL) {
 		printf("Error. Function is NULL\n");
 	}
+	if (front==NULL) {
+		printf("list is empty\n");
+	}
 	else {
 		printf("Applying function to every car.\n");
 		car_t *p; //create pointer to start looping through car_t list
