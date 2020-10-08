@@ -19,7 +19,6 @@
 
 /* the representation of a car */
 typedef struct car {
-	struct car *next;
 	char plate[MAXREG];
 	double price;
 	int year;
@@ -57,7 +56,25 @@ int main (void) {
 
 	//TEST QOPEN
 	queue_t *qp;
+	car_t *cp;
+	int32_t result;
+	
 	qp = qopen(); //returns pointer to newly created queue_t object
+
+	cp = make_car("1234", 5.0, 1969);
+	
+	if((result = qput(qp, (void*)cp)) != 0){
+		printf("qput failed\n");
+		exit(EXIT_FAILURE);
+	}
+ 
+	qclose(qp);
+
+	
+
+	exit(EXIT_SUCCESS);
+}
+
 	
 /*	//TEST QPUT
 	car_t *cp1, *cp2, *first;
@@ -80,11 +97,4 @@ int main (void) {
 	printf("qget success\n");
 	
 */
-	
-	return 0;
-}
-
-
-
-
  

@@ -7,28 +7,31 @@
  * Description: functions on queue_t object
 */ 
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include "queue.h"
 #include <string.h>
-#include <stdlib.h>
+
+
+typedef struct node {
+	struct node *nextp;
+	void *datap;
+} node_t;
 
 
 /* the queue representation is hidden from users of the module */
-struct queue_t {
-	struct car_t *front;
-	struct car_t *back;
-};
+typedef struct qheader {
+	node_t *front;
+	node_t *back;
+} qheader_t;
 
 
 /* create an empty queue */
 queue_t* qopen(void) {
-	struct queue_t *qp;
+	qheader_t *qp;
+	if ((qp = (qheader_t*)malloc(sizeof(qheader_t))) == NULL ) 
+		return NULL;	
 	qp->front = NULL;
 	qp->back = NULL;
-	printf("Empty queue created\n");
-	return qp;
+	return (queue_t*)qp;
 }       
 
 
@@ -36,16 +39,20 @@ queue_t* qopen(void) {
 void qclose(queue_t *qp) {
 	//loop through all elements into
 	//free each one
-	struct car_t *p;
 	
-	for (p=qp->front; p!=NULL; p=p->next) {
+	//include case wherer qp == NULL
+	
+	node_t *p;
+	qheader_t *hp;
+	hp = (qheader_t*)qp;
+	for (p=hp->front; p!=NULL; p=p->next) {
+		//fix
 		free(p);
 	}
-	
-    
-	printf("Queue deallocated\n");
+	free(qp);
 }
 
+#if 0
 
 /* put element at the end of the queue
  * returns 0 if successful; nonzero otherwise 
@@ -141,3 +148,4 @@ void* qremove(queue_t *qp,
  */
 void qconcat(queue_t *q1p, queue_t *q2p);
 
+#endif
