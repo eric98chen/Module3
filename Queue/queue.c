@@ -18,6 +18,19 @@ typedef struct node {
 	void *data;
 } node_t;
 
+static node_t* make_node(void *elementp) {
+	node_t *p;
+	
+	if (elementp == NULL) {	
+		return NULL;
+	}
+	if ((p = (node_t*)malloc(sizeof(node_t))) == NULL ){
+		return NULL;
+	}
+	p->data = elementp;
+	p->next = NULL;
+	return p;
+}
 
 /* the queue representation is hidden from users of the module */
 typedef struct qheader {
@@ -39,20 +52,30 @@ queue_t* qopen(void) {
 
 /* deallocate a queue, frees everything in it */
 void qclose(queue_t *qp) {
-	node_t *p;
+	node_t *prev;
+	node_t *curr;
 	qheader_t *hp;
 
 	//include case where qp == NULL
 	if (qp == NULL) {
 		printf("Error. queue is NULL\n");
 	}
-	hp = (qheader_t*)qp;
-	for (p=hp->front; p!=NULL; p=hp->front) {
-		hp->front = p->next;
-		free(p);
+	else hp = (qheader_t*)qp;
+	curr = hp->front;
+	
+	while (curr != NULL){
+		prev = curr;
+		if(prev->data != NULL){
+			free(prev->data);
+		}
+		curr = prev->next;
+		free(prev);
 	}
-	free(qp);
+		
+	free(hp);
+	printf("The queue has been freed\n");
 }
+
 
 /* put element at the end of the queue
  * returns 0 if successful; nonzero otherwise 
@@ -60,7 +83,9 @@ void qclose(queue_t *qp) {
 int32_t qput(queue_t *qp, void *elementp) {
 
 	qheader_t *hp;
-	hp = (qheader_t*)qp;
+	
+	//malloc
+	node_t *p;
 	
 	if (qp == NULL) {	
 		printf("Queue is NULL\n");
@@ -72,14 +97,17 @@ int32_t qput(queue_t *qp, void *elementp) {
 		return 1;
 	}
 	
+	hp = (qheader_t*)qp;
+	p = make_node(elementp);
+	
 	if (hp->back == NULL) {		//if queue empty
-		hp->back = elementp;	//assignment works because both objects are of type void within this code
-		hp->front = elementp;
+		hp->back = p;	//assignment works because both objects are of type void within this code
+		hp->front = p;
 	}
 	else {						//if list non-empty
-		hp->back->next = elementp;	//joins new element into list. 
+		hp->back->next = p;	//joins new element into list. 
 								//Works bc at this point, back should already be assigned to elementp object type
-		hp->back = elementp;		//set new element as back of queue
+		hp->back = p;		//set new element as back of queue
 	}
 	
 	printf("Element added to list\n");
