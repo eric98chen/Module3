@@ -12,19 +12,21 @@
 #include <stdbool.h>
 #include "queue.h"
 #include <string.h>
+#include <stdlib.h>
 
 
 /* the queue representation is hidden from users of the module */
-typedef void queue_t;
-
-//front and back pointers for queue
-static queue_t *front = NULL;
-static queue_t *back = NULL;
+struct queue_t {
+	struct car_t *front;
+	struct car_t *back;
+};
 
 
 /* create an empty queue */
 queue_t* qopen(void) {
-	queue_t *qp;
+	struct queue_t *qp;
+	qp->front = NULL;
+	qp->back = NULL;
 	printf("Empty queue created\n");
 	return qp;
 }       
@@ -34,10 +36,13 @@ queue_t* qopen(void) {
 void qclose(queue_t *qp) {
 	//loop through all elements into
 	//free each one
-	queue_t *p;
-	for (p=front; p!=NULL; p=p->next) {
+	struct car_t *p;
+	
+	for (p=qp->front; p!=NULL; p=p->next) {
 		free(p);
 	}
+	
+    
 	printf("Queue deallocated\n");
 }
 
@@ -75,7 +80,7 @@ int32_t qput(queue_t *qp, void *elementp) {
 /* get the first first element from queue, removing it from the queue */
 void* qget(queue_t *qp) {
 
-	if (front==NULL) {
+	if (qp->front==NULL) {
 		printf("Queue is empty\n");
 		return NULL;
 	}
@@ -89,7 +94,23 @@ void* qget(queue_t *qp) {
 
 
 /* apply a function to every element of the queue */
-void qapply(queue_t *qp, void (*fn)(void* elementp));
+void qapply(queue_t *qp, void (*fn)(void* elementp)) {
+
+	if (fn==NULL) {
+		printf("Error. Function is NULL\n");
+	}
+	if (qp->front==NULL) {
+		printf("Queue is empty\n");
+	}
+	else {
+		printf("Applying function to every element of the queue.\n");
+		queue_t *p; //create pointer to start looping through queue elements
+		for (p=qp->front; p!=NULL; p=p->next) { //loops through queue and applies function fn to each item
+			fn(p);
+		}
+	}
+
+}
 
 
 /* search a queue using a supplied boolean function
