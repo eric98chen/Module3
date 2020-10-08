@@ -9,11 +9,13 @@
 
 #include "queue.h"
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 
 typedef struct node {
-	struct node *nextp;
-	void *datap;
+	struct node *next;
+	void *data;
 } node_t;
 
 
@@ -37,27 +39,28 @@ queue_t* qopen(void) {
 
 /* deallocate a queue, frees everything in it */
 void qclose(queue_t *qp) {
-	//loop through all elements into
-	//free each one
-	
-	//include case wherer qp == NULL
-	
 	node_t *p;
 	qheader_t *hp;
+
+	//include case where qp == NULL
+	if (qp == NULL) {
+		printf("Error. queue is NULL\n");
+	}
 	hp = (qheader_t*)qp;
-	for (p=hp->front; p!=NULL; p=p->next) {
-		//fix
+	for (p=hp->front; p!=NULL; p=hp->front) {
+		hp->front = p->next;
 		free(p);
 	}
 	free(qp);
 }
 
-#if 0
-
 /* put element at the end of the queue
  * returns 0 if successful; nonzero otherwise 
  */
 int32_t qput(queue_t *qp, void *elementp) {
+
+	qheader_t *hp;
+	hp = (qheader_t*)qp;
 	
 	if (qp == NULL) {	
 		printf("Queue is NULL\n");
@@ -69,20 +72,21 @@ int32_t qput(queue_t *qp, void *elementp) {
 		return 1;
 	}
 	
-	if (back == NULL) {		//if queue empty
-		back = elementp;	//assignment works because both objects are of type void within this code
-		front = elementp;
+	if (hp->back == NULL) {		//if queue empty
+		hp->back = elementp;	//assignment works because both objects are of type void within this code
+		hp->front = elementp;
 	}
 	else {						//if list non-empty
-		back->next = elementp;	//joins new element into list. 
+		hp->back->next = elementp;	//joins new element into list. 
 								//Works bc at this point, back should already be assigned to elementp object type
-		back = elementp;		//set new element as back of queue
+		hp->back = elementp;		//set new element as back of queue
 	}
 	
 	printf("Element added to list\n");
 	return 0;
 }
 
+#if 0
 
 /* get the first first element from queue, removing it from the queue */
 void* qget(queue_t *qp) {
