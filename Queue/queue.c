@@ -62,7 +62,6 @@ void qclose(queue_t *qp) {
 	}
 	else hp = (qheader_t*)qp;
 	curr = hp->front;
-	
 	while (curr != NULL){
 		prev = curr;
 		if(prev->data != NULL){
@@ -83,8 +82,6 @@ void qclose(queue_t *qp) {
 int32_t qput(queue_t *qp, void *elementp) {
 
 	qheader_t *hp;
-	
-	//malloc
 	node_t *p;
 	
 	if (qp == NULL) {	
@@ -127,6 +124,12 @@ void* qget(queue_t *qp) {
 	}
 	
 	hp = (qheader_t*)qp;
+	
+	if (hp->front==NULL) {
+		printf("Queue is empty\n");
+		return NULL;
+	}
+	
 	p = hp->front; //need this to keep track of first element as we update front
 	hp->front = hp->front->next; //effectively removes first element from queue
 
@@ -145,8 +148,7 @@ void* qget(queue_t *qp) {
 /* apply a function to every element of the queue */
 void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 	qheader_t *hp;
-	node_t *prev;
-	node_t *curr;
+	node_t *p;
 	
 	if (qp == NULL) {	
 		printf("Queue is NULL\n");
@@ -162,19 +164,16 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 	else {
 		printf("Applying function to every element of the queue.\n");
 
-		curr = hp->front;
-		while (curr != NULL){
-			prev = curr;
-			if(prev->data != NULL){
-				fn(prev->data);
+		p = hp->front;
+		while (p != NULL){
+			if(p->data != NULL){
+				fn(p->data);
 			}
-			curr = prev->next;
+			p = p->next;
 		}
 	}
 }
 
-
-#if 0
 
 
 /* search a queue using a supplied boolean function
@@ -188,7 +187,40 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
  */
 void* qsearch(queue_t *qp, 
 							bool (*searchfn)(void* elementp,const void* keyp),
-							const void* skeyp);
+							const void* skeyp){
+	qheader_t *hp;
+	node_t *p;
+	bool result;
+	
+	if (qp == NULL) {	
+		printf("Queue is NULL\n");
+		return NULL;
+	}
+	hp = (qheader_t*)qp;
+	
+	if (searchfn==NULL) {
+		printf("Error. Function is NULL\n");
+		return NULL;
+	}
+	if (hp->front==NULL) {
+		printf("Queue is empty\n");
+		return NULL;
+	}
+	else {
+		printf("Applying function to every element of the queue.\n");
+
+		p = hp->front;
+		while (curr != NULL){
+			if(p->data != NULL){
+				if ((result = searchfn(p->data, skeyp)) == true){
+					return(p);
+				}
+			}
+			p = p->next;
+		}
+		return NULL;
+	}						
+}
 
 
 /* search a queue using a supplied boolean function (as in qsearch),
@@ -197,12 +229,86 @@ void* qsearch(queue_t *qp,
  */
 void* qremove(queue_t *qp,
 							bool (*searchfn)(void* elementp,const void* keyp),
-							const void* skeyp);
+							const void* skeyp){
+	qheader_t *hp;
+	node_t *prev;
+	node_t *curr;
+	bool result;
+	void *tmp;
+	
+	if (qp == NULL) {	
+		printf("Queue is NULL\n");
+		return NULL;
+	}
+	hp = (qheader_t*)qp;
+	
+	if (searchfn==NULL) {
+		printf("Error. Function is NULL\n");
+		return NULL;
+	}
+	if (hp->front==NULL) {
+		printf("Queue is empty\n");
+		return NULL;
+	}
+	else {
+		printf("Applying function to every element of the queue.\n");
+
+		curr = hp->front;
+		while (curr != NULL){
+			prev = curr;
+			if(prev->data != NULL){
+				if ((result = searchfn(prev->data, skeyp)) == true){
+					tmp = prev->data;
+					if(prev->data != NULL){
+						free(prev->data);
+					}
+					free(prev);
+					printf("Searched element removed and returned\n");
+					return tmp; //returns first element
+				}
+			}
+			curr = prev->next;
+		}
+		return NULL;
+	}						
+}
+
 
 
 /* concatenatenates elements of q2 into q1
  * q2 is dealocated, closed, and unusable upon completion 
  */
-void qconcat(queue_t *q1p, queue_t *q2p);
+void qconcat(queue_t *q1p, queue_t *q2p){
+	node_t *p;
+	qheader_t *hp1;
+	qheader_t *hp2;
+	node_t *curr;
 
-#endif
+	if ((q1p == NULL) || (q2p == NULL) {	
+		printf("Queue is NULL\n");
+	}
+	
+	hp1 = (qheader_t*)q1p;
+	hp2 = (qheader_t*)q2p;
+	
+	if ((hp1->front==NULL) || (hp1->front==NULL)) {
+		printf("Queue is empty\n");
+		return NULL;
+	}
+
+	curr = hp2->front;
+	while (curr != NULL){
+		p = make_node(curr->data);
+		hp1->back->next = p;
+		hp1->back = p;
+		curr = curr->next;
+	}
+
+	qclose(q2p);
+}
+
+
+
+
+
+
