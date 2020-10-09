@@ -139,26 +139,42 @@ void* qget(queue_t *qp) {
 	return tmp; //returns first element
 }
 
-#if 0
+
 
 
 /* apply a function to every element of the queue */
 void qapply(queue_t *qp, void (*fn)(void* elementp)) {
-
+	qheader_t *hp;
+	node_t *prev;
+	node_t *curr;
+	
+	if (qp == NULL) {	
+		printf("Queue is NULL\n");
+	}
+	hp = (qheader_t*)qp;
+	
 	if (fn==NULL) {
 		printf("Error. Function is NULL\n");
 	}
-	if (qp->front==NULL) {
+	if (hp->front==NULL) {
 		printf("Queue is empty\n");
 	}
 	else {
 		printf("Applying function to every element of the queue.\n");
-		queue_t *p; //create pointer to start looping through queue elements
-		for (p=qp->front; p!=NULL; p=p->next) { //loops through queue and applies function fn to each item
-			fn(p);
+
+		curr = hp->front;
+		while (curr != NULL){
+			prev = curr;
+			if(prev->data != NULL){
+				fn(prev->data);
+			}
+			curr = prev->next;
 		}
 	}
 }
+
+
+#if 0
 
 
 /* search a queue using a supplied boolean function
