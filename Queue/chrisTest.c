@@ -55,20 +55,41 @@ int main (void) {
 
 	//TEST QOPEN
 	queue_t *qp;
-	car_t *cp;
+	car_t *cp1;
+	car_t *cp2;
+	car_t *cp3;
+	car_t *cp4;
 	int32_t result;
+	int yr;
 	
 	qp = qopen(); //returns pointer to newly created queue_t object
 
-	cp = make_car("1234", 5.0, 1969);
+	cp1 = make_car("1234", 5.0, 1969);
+	cp2 = make_car("1000", 2.0, 1940);
+	cp3 = make_car("5555", 9.0, 1931);
 	
-	if((result = qput(qp, (void*)cp)) != 0){
+	if((result = qput(qp, (void*)cp1)) != 0){
 		printf("qput failed\n");
 		exit(EXIT_FAILURE);
 	}
 	
+	if((result = qput(qp, (void*)cp2)) != 0){
+		printf("qput failed\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	if((result = qput(qp, (void*)cp3)) != 0){
+		printf("qput failed\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	cp4 = qget(qp);
+	
+	yr = cp4->year;
+	printf("year = %d\n", yr);
+	
 	qclose(qp);
-
+	
 	exit(EXIT_SUCCESS);
 }
 

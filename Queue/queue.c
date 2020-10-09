@@ -106,7 +106,6 @@ int32_t qput(queue_t *qp, void *elementp) {
 	}
 	else {						//if list non-empty
 		hp->back->next = p;	//joins new element into list. 
-								//Works bc at this point, back should already be assigned to elementp object type
 		hp->back = p;		//set new element as back of queue
 	}
 	
@@ -114,22 +113,33 @@ int32_t qput(queue_t *qp, void *elementp) {
 	return 0;
 }
 
-#if 0
+
 
 /* get the first first element from queue, removing it from the queue */
 void* qget(queue_t *qp) {
+	node_t *p;
+	void *tmp;
+	qheader_t *hp;
 
-	if (qp->front==NULL) {
-		printf("Queue is empty\n");
+	if (qp == NULL) {	
+		printf("Queue is NULL\n");
 		return NULL;
 	}
-	else {
-		printf("First element removed and returned\n");
-		queue_t *firstElement = front; //need this to keep track of first element as we update front
-		front = front->next; //effectively removes first element from queue
-		return firstElement; //returns first element
+	
+	hp = (qheader_t*)qp;
+	p = hp->front; //need this to keep track of first element as we update front
+	hp->front = hp->front->next; //effectively removes first element from queue
+
+	tmp = p->data;
+	if(p->data != NULL){
+		free(p->data);
 	}
+	free(p);
+	printf("First element removed and returned\n");
+	return tmp; //returns first element
 }
+
+#if 0
 
 
 /* apply a function to every element of the queue */
@@ -148,7 +158,6 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 			fn(p);
 		}
 	}
-
 }
 
 
