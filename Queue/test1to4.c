@@ -107,6 +107,8 @@ int main (void) {
 		exit(EXIT_FAILURE);
 	}
 	printf("qput cases successful\n\n");
+	
+	cp1->year = 0000;
  
  
  	//TEST QGET
