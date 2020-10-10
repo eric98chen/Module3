@@ -31,11 +31,6 @@ static node_t* make_node(void *elementp) {
 	}
 	printf("node malloc success\n");
 	
-	//void *newElement = (void)*)malloc(sizeof(node_t)))
-	//p->data = (void*)malloc(sizeof(*elementp));
-	
-	//ISSUE: p->data points to same address as pointer passed in, so user could redefine the data stored at that address within main itself, which is a problem
-	//SOLUTION: ???
 	p->data = elementp; //both of type void
 	p->next = NULL;
 	printf("Address: %p \n", p->data);
