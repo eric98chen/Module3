@@ -12,22 +12,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
+/* defines each node of a queue */
 typedef struct node {
-	struct node *next;
-	void *data;
+	struct node *next;	//point to next node
+	void *data;			//holds data of node
 } node_t;
 
+
+/* creates new node */
 static node_t* make_node(void *elementp) {
 	node_t *p;
 	
 	if (elementp == NULL) {	
 		return NULL;
 	}
-	if ((p = (node_t*)malloc(sizeof(node_t))) == NULL ){
+	if ((p = (node_t*)malloc(sizeof(node_t))) == NULL){
 		return NULL;
 	}
-	p->data = elementp;
+	p->data = elementp; //both of type void
 	p->next = NULL;
 	return p;
 }
@@ -42,10 +44,11 @@ typedef struct qheader {
 /* create an empty queue */
 queue_t* qopen(void) {
 	qheader_t *qp;
-	if ((qp = (qheader_t*)malloc(sizeof(qheader_t))) == NULL ) 
+	if ( (qp = (qheader_t*)malloc(sizeof(qheader_t))) == NULL ) 
 		return NULL;	
 	qp->front = NULL;
 	qp->back = NULL;
+	printf("New queue created\n");
 	return (queue_t*)qp;
 }       
 
@@ -58,21 +61,23 @@ void qclose(queue_t *qp) {
 
 	//include case where qp == NULL
 	if (qp == NULL) {
-		printf("Error. queue is NULL\n");
+		printf("Error: queue is NULL\n");
 	}
-	else hp = (qheader_t*)qp;
-	curr = hp->front;
-	while (curr != NULL){
-		prev = curr;
-		if(prev->data != NULL){
-			free(prev->data);
+	else {
+		hp = (qheader_t*)qp; //need to coerce void queue_t object into local qheader_t object
+		curr = hp->front;
+		while (curr != NULL){	//loops through and frees data and *next pointer stored in each node
+			prev = curr;
+			if(prev->data != NULL){
+				free(prev->data);//free data stored
+			}
+			curr = prev->next;
+			free(prev);	//free *next pointer
 		}
-		curr = prev->next;
-		free(prev);
+		free(hp);
+		printf("The queue has been freed\n");
 	}
 		
-	free(hp);
-	printf("The queue has been freed\n");
 }
 
 
@@ -85,12 +90,12 @@ int32_t qput(queue_t *qp, void *elementp) {
 	node_t *p;
 	
 	if (qp == NULL) {	
-		printf("Queue is NULL\n");
+		printf("Error: queue is NULL\n");
 		return 1;
 	}
 	
 	if (elementp == NULL) {	
-		printf("Object passed in is NULL\n");
+		printf("Error: object passed in is NULL\n");
 		return 1;
 	}
 	
@@ -98,12 +103,12 @@ int32_t qput(queue_t *qp, void *elementp) {
 	p = make_node(elementp);
 	
 	if (hp->back == NULL) {		//if queue empty
-		hp->back = p;	//assignment works because both objects are of type void within this code
+		hp->back = p;			//both objects are type void
 		hp->front = p;
 	}
 	else {						//if list non-empty
-		hp->back->next = p;	//joins new element into list. 
-		hp->back = p;		//set new element as back of queue
+		hp->back->next = p;		//joins new element into list. 
+		hp->back = p;			//set new element as back of queue
 	}
 	
 	printf("Element added to list\n");
@@ -112,41 +117,43 @@ int32_t qput(queue_t *qp, void *elementp) {
 
 
 
-/* get the first first element from queue, removing it from the queue */
+/* get the first element from queue, removing it from the queue */
 void* qget(queue_t *qp) {
+	qheader_t *hp;
 	node_t *p;
 	void *tmp;
-	qheader_t *hp;
 
 	if (qp == NULL) {	
-		printf("Queue is NULL\n");
+		printf("Error: queue is NULL\n");
 		return NULL;
 	}
 	
 	hp = (qheader_t*)qp;
 	
 	if (hp->front==NULL) {
-		printf("Queue is empty\n");
+		printf("Error: queue is empty\n");
 		return NULL;
 	}
 	
 	p = hp->front; //need this to keep track of first element as we update front
 	hp->front = hp->front->next; //effectively removes first element from queue
 
-	tmp = p->data;
-	if(p->data != NULL){
+	tmp = p->data; //keep track of data stored in first element
+	if(p->data != NULL){ 
 		free(p->data);
 	}
-	free(p);
+	free(p); //frees everything in first element
+	
 	printf("First element removed and returned\n");
-	return tmp; //returns first element
+	return tmp; //returns data stored in first element
 }
 
 
-
+//NOTE: commenting out functions below bc compiler found errors but I'm only trying to test first 4 functions
 
 /* apply a function to every element of the queue */
-void qapply(queue_t *qp, void (*fn)(void* elementp)) {
+
+/*void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 	qheader_t *hp;
 	node_t *p;
 	
@@ -173,6 +180,7 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 		}
 	}
 }
+*/
 
 
 
@@ -185,7 +193,7 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
  *          -- returns TRUE or FALSE as defined in bool.h
  * returns a pointer to an element, or NULL if not found
  */
-void* qsearch(queue_t *qp, 
+/*void* qsearch(queue_t *qp, 
 							bool (*searchfn)(void* elementp,const void* keyp),
 							const void* skeyp){
 	qheader_t *hp;
@@ -221,13 +229,13 @@ void* qsearch(queue_t *qp,
 		return NULL;
 	}						
 }
-
+*/
 
 /* search a queue using a supplied boolean function (as in qsearch),
  * removes the element from the queue and returns a pointer to it or
  * NULL if not found
  */
-void* qremove(queue_t *qp,
+/*void* qremove(queue_t *qp,
 							bool (*searchfn)(void* elementp,const void* keyp),
 							const void* skeyp){
 	qheader_t *hp;
@@ -272,13 +280,13 @@ void* qremove(queue_t *qp,
 		return NULL;
 	}						
 }
-
+*/
 
 
 /* concatenatenates elements of q2 into q1
  * q2 is dealocated, closed, and unusable upon completion 
  */
-void qconcat(queue_t *q1p, queue_t *q2p){
+/*void qconcat(queue_t *q1p, queue_t *q2p){
 	node_t *p;
 	qheader_t *hp1;
 	qheader_t *hp2;
@@ -306,8 +314,7 @@ void qconcat(queue_t *q1p, queue_t *q2p){
 
 	qclose(q2p);
 }
-
-
+*/
 
 
 
