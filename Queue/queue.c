@@ -29,6 +29,7 @@ static node_t* make_node(void *elementp) {
 	if ((p = (node_t*)malloc(sizeof(node_t))) == NULL){
 		return NULL;
 	}
+	printf("node malloc success\n");
 	p->data = elementp; //both of type void
 	p->next = NULL;
 	return p;
@@ -48,6 +49,7 @@ queue_t* qopen(void) {
 		return NULL;	
 	qp->front = NULL;
 	qp->back = NULL;
+	printf("queue malloc success\n");
 	printf("New queue created\n");
 	return (queue_t*)qp;
 }       
@@ -139,10 +141,10 @@ void* qget(queue_t *qp) {
 	hp->front = hp->front->next; //effectively removes first element from queue
 
 	tmp = p->data; //keep track of data stored in first element
-	if(p->data != NULL){ 
-		free(p->data);
-	}
-	free(p); //frees everything in first element
+	//if(p->data != NULL){  
+	//	free(p->data); //cant free data memory here. Causes memory issue. Instead, free in test main
+	//}
+	free(p); //frees *next pointer
 	
 	printf("First element removed and returned\n");
 	return tmp; //returns data stored in first element
@@ -267,10 +269,10 @@ void* qget(queue_t *qp) {
 			if(prev->data != NULL){
 				if ((result = searchfn(prev->data, skeyp)) == true){
 					tmp = prev->data;
-					if(prev->data != NULL){
-						free(prev->data);
-					}
-					free(prev);
+					//if(prev->data != NULL){ //cant free data here. Causes memory issue. Instead, free in test main
+					//	free(prev->data);
+					//}
+					free(prev); //OK to free prev, bc refers to the node_t *next pointer, not the data returned
 					printf("Searched element removed and returned\n");
 					return tmp; //returns first element
 				}

@@ -24,10 +24,7 @@ typedef struct car {
 	int year;
 } car_t;
  
-
-/* makeCar(): creates a car object
- * returns 0 if successful; nonzero otherwise 
- */
+/* makeCar(): creates a car object */
 car_t* make_car(char *platep, double price, int year) {
 	
 	car_t *cp;
@@ -35,10 +32,31 @@ car_t* make_car(char *platep, double price, int year) {
 		printf("Error: malloc failed allocating car\n");
 		return NULL;
 	}
+	printf("car malloc succesful\n");
 	strcpy(cp->plate, platep);
 	cp->price = price;
 	cp->year = year;
 	return cp;
+}
+
+
+/* the representation of a student */
+typedef struct student {
+	char name[MAXREG];
+	int year;
+} student_t;
+
+/* makeCar(): creates a student object */
+student_t* make_student(char *namep, int year) {
+	
+	student_t *sp;
+	if ((sp = (student_t*)malloc(sizeof(student_t))) == NULL) { 	//check if enough space in memory for car_t*
+		printf("Error: malloc failed allocating car\n");
+		return NULL;
+	}
+	strcpy(sp->name, namep);
+	sp->year = year;
+	return sp;
 }
 
 
@@ -69,7 +87,7 @@ int main (void) {
 
 	//TEST QPUT
 	if((result = qput(qp, (void*)cpNULL)) != 0){ //put a NULL element
-		printf(">>qput (cpNULL) occurred as expected\n");
+		printf(">> qput (cpNULL) occurred as expected\n");
 	}
 	
 	cp1 = make_car("car1", 1.0, 1910); //declare all cars
@@ -80,12 +98,10 @@ int main (void) {
 		printf("qput1 failed\n");
 		exit(EXIT_FAILURE);
 	}
-	
 	if((result = qput(qp, (void*)cp2)) != 0){ //Put into non-empty queue
 		printf("qput2 failed\n");
 		exit(EXIT_FAILURE);
 	}
-	
 	if((result = qput(qp, (void*)cp3)) != 0){
 		printf("qput3 failed\n");
 		exit(EXIT_FAILURE);
@@ -93,14 +109,14 @@ int main (void) {
 	printf("qput cases successful\n\n");
  
  
- 	//TEST QPGET
+ 	//TEST QGET
  	cpNULL =(car_t*)qget(qpNULL); //get from NULL queue
  	printf(">>qget (qpNULL) occurred as expected\n");
 
 	cpFirst = (car_t*)qget(qp); //get from queue. Need to coerce void pointer into car_t pointer
 	cpSecond = (car_t*)qget(qp); 
 	cpThird = (car_t*)qget(qp);	//get last element from queue
-	cpNULL = (car_t*)qget(qp); //get from empty queue
+	//cpNULL = (car_t*)qget(qp); //get from empty queue
 
 	printf("Car 1: plate = %s, price = %f, year = %d\n", cpFirst->plate, cpFirst->price, cpFirst->year);
 	printf("Car 2: plate = %s, price = %f, year = %d\n", cpSecond->plate, cpSecond->price, cpSecond->year);
@@ -113,7 +129,11 @@ int main (void) {
 	printf(">>qclose (qpNULL) occurred as expected\n");
 
 	qclose(qp);
-	printf("qclose successful\n");
+	printf("qclose successful\n\n");
+	
+	free(cpFirst);
+	free(cpSecond);
+	free(cpThird);
 
 	exit(EXIT_SUCCESS);
 }
