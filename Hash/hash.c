@@ -115,6 +115,7 @@ void hclose(hashtable_t *htp) {
 	}
 }
 
+
 /* hput -- puts an entry into a hash table under designated key 
  * returns 0 for success; non-zero otherwise
  */
@@ -144,7 +145,18 @@ int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
 
 
 /* happly -- applies a function to every entry in hash table */
-void happly(hashtable_t *htp, void (*fn)(void* ep));
+void happly(hashtable_t *htp, void (*fn)(void* ep)) {
+	hheader_t *hp;
+	uint32_t i;
+
+	if ( htp != NULL && fn != NULL ) {
+		hp = (hheader_t*)htp;
+
+		for ( i=0; i<hp->n; i++ ) {     // for each queue in table
+			qapply((hp->table)[i], fn);   // apply function to every element in queue
+		}
+	}
+}
 
 
 /* hsearch -- searchs for an entry under a designated key using a
