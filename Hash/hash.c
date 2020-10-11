@@ -3,6 +3,73 @@
  *
  */
 #include <stdint.h>
+#include <stdlib.h>
+#include "queue.h"
+#include "hash.h"
+
+#define get16bits(d) (*((const uint16_t *) (d)))
+
+/* the hash table representation is hidden from users of the module */
+typedef struct hheader {
+	queue_t** table;    // an array of queues
+	int32_t n;          // size of array
+}hheader_t;
+
+/* hopen -- opens a hash table with initial size hsize */
+hashtable_t *hopen(uint32_t hsize) {
+	hheader_t *hp;
+	queue_t *q;
+	int32_t i;
+
+	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
+		return NULL;
+	q = qopen();
+	if (q == NULL)
+		return NULL;
+	if ( (hp->table = (queue_t**)malloc(sizeof(q) * hsize)) == NULL ) {
+		free(hp);
+		free(q);
+		return NULL;
+	}
+	free(q);
+	hp->n = hsize;
+
+	for ( i=0; i<hp->n; i++ ) {
+		(hp->table)[i] = qopen();
+	}
+	
+	return (hashtable_t*)hp;
+}
+
+/* hclose -- closes a hash table */
+void hclose(hashtable_t *htp);
+
+/* hput -- puts an entry into a hash table under designated key 
+ * returns 0 for success; non-zero otherwise
+ */
+int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen);
+
+/* happly -- applies a function to every entry in hash table */
+void happly(hashtable_t *htp, void (*fn)(void* ep));
+
+/* hsearch -- searchs for an entry under a designated key using a
+ * designated search fn -- returns a pointer to the entry or NULL if
+ * not found
+ */
+void *hsearch(hashtable_t *htp, 
+	      bool (*searchfn)(void* elementp, const void* searchkeyp), 
+	      const char *key, 
+	      int32_t keylen);
+
+/* hremove -- removes and returns an entry under a designated key
+ * using a designated search fn -- returns a pointer to the entry or
+ * NULL if not found
+ */
+void *hremove(hashtable_t *htp, 
+	      bool (*searchfn)(void* elementp, const void* searchkeyp), 
+	      const char *key, 
+	      int32_t keylen);
+
 
 /* 
  * SuperFastHash() -- produces a number between 0 and the tablesize-1.
@@ -12,8 +79,6 @@
  * function used all over the place nowadays, including Google Sparse
  * Hash.
  */
-#define get16bits(d) (*((const uint16_t *) (d)))
-
 static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
   uint32_t hash = len, tmp;
   int rem;
