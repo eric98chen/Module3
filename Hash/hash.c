@@ -34,7 +34,7 @@ hashtable_t *hopen(uint32_t hsize) {
 	free(q);
 	hp->n = hsize;
 
-	/* initialize each pointer in hash table with queue_t  */
+	/* initialize each pointer in hash table with empty queue_t */
 	for ( i=0; i<hp->n; i++ ) {
 		(hp->table)[i] = qopen();
 	}
@@ -43,7 +43,19 @@ hashtable_t *hopen(uint32_t hsize) {
 }
 
 /* hclose -- closes a hash table */
-void hclose(hashtable_t *htp);
+void hclose(hashtable_t *htp) {
+	hheader_t *hp;
+	int32_t i;
+	
+	if (htp != NULL) {
+		hp = (hheader_t*)htp;
+		
+		for ( i=0; i<hp->n; i++ ) {  // for all slots in table
+			qclose((hp->table)[i]);    // close queue
+		}
+		free(hp);  //free header
+	}
+}
 
 /* hput -- puts an entry into a hash table under designated key 
  * returns 0 for success; non-zero otherwise
