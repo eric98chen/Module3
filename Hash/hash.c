@@ -199,5 +199,5 @@ void *hremove(hashtable_t *htp,
 	hp = (hheader_t*)htp;
 	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
 	
-	return qremove((hp->table)[slot], searchfn, key);  // qsearch returns element
+	return qremove((hp->table)[slot], searchfn, key);  // qremove removes and  returns element
 }
