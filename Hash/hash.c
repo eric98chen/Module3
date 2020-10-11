@@ -18,7 +18,7 @@ typedef struct hheader {
 /* hopen -- opens a hash table with initial size hsize */
 hashtable_t *hopen(uint32_t hsize) {
 	hheader_t *hp;
-	queue_t *q;
+	queue_t *q;   // temporary, only used in sizeof() to malloc array
 	int32_t i;
 
 	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
@@ -34,6 +34,7 @@ hashtable_t *hopen(uint32_t hsize) {
 	free(q);
 	hp->n = hsize;
 
+	/* initialize each pointer in hash table with queue_t  */
 	for ( i=0; i<hp->n; i++ ) {
 		(hp->table)[i] = qopen();
 	}
