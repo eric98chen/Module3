@@ -164,9 +164,21 @@ void happly(hashtable_t *htp, void (*fn)(void* ep)) {
  * not found
  */
 void *hsearch(hashtable_t *htp, 
-	      bool (*searchfn)(void* elementp, const void* searchkeyp), 
-	      const char *key, 
-	      int32_t keylen);
+							bool (*searchfn)(void* elementp, const void* searchkeyp), 
+							const char *key, int32_t keylen) {
+	hheader_t *hp;
+	uint32_t slot;
+
+	if ( htp == NULL || searchfn == NULL || key == NULL )
+		return NULL;
+	if ( keylen < 1 )
+		return NULL;
+	
+	hp = (hheader_t*)htp;
+	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
+	
+	return qsearch((hp->table)[slot], searchfn, key);  // qsearch returns element
+}
 
 
 /* hremove -- removes and returns an entry under a designated key
