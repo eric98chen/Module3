@@ -4,6 +4,7 @@
  */
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "queue.h"
 #include "hash.h"
 
@@ -21,6 +22,10 @@ hashtable_t *hopen(uint32_t hsize) {
 	queue_t *q;   // temporary, only used in sizeof() to malloc array
 	int32_t i;
 
+	if (hsize<1) {
+		fprintf(stderr,"Error. Cannot make hash table with size < 1.\n");
+		return NULL;
+	}
 	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
 		return NULL;
 	q = qopen();
@@ -60,7 +65,10 @@ void hclose(hashtable_t *htp) {
 /* hput -- puts an entry into a hash table under designated key 
  * returns 0 for success; non-zero otherwise
  */
-int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen);
+int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
+	hheader_t *hp;
+	
+}
 
 /* happly -- applies a function to every entry in hash table */
 void happly(hashtable_t *htp, void (*fn)(void* ep));
