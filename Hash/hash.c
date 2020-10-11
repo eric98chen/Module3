@@ -10,86 +10,12 @@
 
 #define get16bits(d) (*((const uint16_t *) (d)))
 
+
 /* the hash table representation is hidden from users of the module */
 typedef struct hheader {
 	queue_t** table;    // an array of queues
-	int32_t n;          // size of array
+	uint32_t n;          // size of array
 }hheader_t;
-
-/* hopen -- opens a hash table with initial size hsize */
-hashtable_t *hopen(uint32_t hsize) {
-	hheader_t *hp;
-	queue_t *q;   // temporary, only used in sizeof() to malloc array
-	int32_t i;
-
-	if (hsize<1) {
-		fprintf(stderr,"Error. Cannot make hash table with size < 1.\n");
-		return NULL;
-	}
-	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
-		return NULL;
-	q = qopen();
-	if (q == NULL)
-		return NULL;
-	if ( (hp->table = (queue_t**)malloc(sizeof(q) * hsize)) == NULL ) {
-		free(hp);
-		free(q);
-		return NULL;
-	}
-	free(q);
-	hp->n = hsize;
-
-	/* initialize each pointer in hash table with empty queue_t */
-	for ( i=0; i<hp->n; i++ ) {
-		(hp->table)[i] = qopen();
-	}
-	
-	return (hashtable_t*)hp;
-}
-
-/* hclose -- closes a hash table */
-void hclose(hashtable_t *htp) {
-	hheader_t *hp;
-	int32_t i;
-	
-	if (htp != NULL) {
-		hp = (hheader_t*)htp;
-		
-		for ( i=0; i<hp->n; i++ ) {  // for all slots in table
-			qclose((hp->table)[i]);    // close queue
-		}
-		free(hp);  //free header
-	}
-}
-
-/* hput -- puts an entry into a hash table under designated key 
- * returns 0 for success; non-zero otherwise
- */
-int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
-	hheader_t *hp;
-	
-}
-
-/* happly -- applies a function to every entry in hash table */
-void happly(hashtable_t *htp, void (*fn)(void* ep));
-
-/* hsearch -- searchs for an entry under a designated key using a
- * designated search fn -- returns a pointer to the entry or NULL if
- * not found
- */
-void *hsearch(hashtable_t *htp, 
-	      bool (*searchfn)(void* elementp, const void* searchkeyp), 
-	      const char *key, 
-	      int32_t keylen);
-
-/* hremove -- removes and returns an entry under a designated key
- * using a designated search fn -- returns a pointer to the entry or
- * NULL if not found
- */
-void *hremove(hashtable_t *htp, 
-	      bool (*searchfn)(void* elementp, const void* searchkeyp), 
-	      const char *key, 
-	      int32_t keylen);
 
 
 /* 
@@ -140,4 +66,103 @@ static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
   hash += hash >> 6;
   return hash % tablesize;
 }
+
+
+/* hopen -- opens a hash table with initial size hsize */
+hashtable_t *hopen(uint32_t hsize) {
+	hheader_t *hp;
+	queue_t *q;   // temporary, only used in sizeof() to malloc array
+	uint32_t i;
+
+	if (hsize<1) {
+		fprintf(stderr,"Error. Cannot make hash table with size < 1.\n");
+		return NULL;
+	}
+	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
+		return NULL;
+	q = qopen();
+	if (q == NULL)
+		return NULL;
+	if ( (hp->table = (queue_t**)malloc(sizeof(q) * hsize)) == NULL ) {
+		free(hp);
+		free(q);
+		return NULL;
+	}
+	free(q);
+	hp->n = hsize;
+
+	/* initialize each pointer in hash table with empty queue_t */
+	for ( i=0; i<hp->n; i++ ) {
+		(hp->table)[i] = qopen();
+	}
+	
+	return (hashtable_t*)hp;
+}
+
+
+/* hclose -- closes a hash table */
+void hclose(hashtable_t *htp) {
+	hheader_t *hp;
+	uint32_t i;
+	
+	if (htp != NULL) {
+		hp = (hheader_t*)htp;
+		
+		for ( i=0; i<hp->n; i++ ) {  // for all slots in table
+			qclose((hp->table)[i]);    // close queue
+		}
+		free(hp);  //free header
+	}
+}
+
+/* hput -- puts an entry into a hash table under designated key 
+ * returns 0 for success; non-zero otherwise
+ */
+int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
+	hheader_t *hp;
+	uint32_t slot;
+
+	// check that all pointers are defined
+	if (htp == NULL || ep == NULL || key == NULL)
+		return 1;
+	if (keylen < 1) {
+		fprintf(stderr,"Error. Key must have length > 0.\n");
+		return 1;
+	}
+
+	hp = (hheader_t*)htp;
+
+	slot = SuperFastHash(key, keylen, hp->n);  // use hash function
+
+	// add element to corresponding queue
+	if ( qput((hp->table)[slot], ep) != 0) {
+		fprintf(stderr,"Error. Failed to add data to queue in hash table.\n");
+		return 1;
+	}
+	return 0;
+}
+
+
+/* happly -- applies a function to every entry in hash table */
+void happly(hashtable_t *htp, void (*fn)(void* ep));
+
+
+/* hsearch -- searchs for an entry under a designated key using a
+ * designated search fn -- returns a pointer to the entry or NULL if
+ * not found
+ */
+void *hsearch(hashtable_t *htp, 
+	      bool (*searchfn)(void* elementp, const void* searchkeyp), 
+	      const char *key, 
+	      int32_t keylen);
+
+
+/* hremove -- removes and returns an entry under a designated key
+ * using a designated search fn -- returns a pointer to the entry or
+ * NULL if not found
+ */
+void *hremove(hashtable_t *htp, 
+	      bool (*searchfn)(void* elementp, const void* searchkeyp), 
+	      const char *key, 
+	      int32_t keylen);
 
