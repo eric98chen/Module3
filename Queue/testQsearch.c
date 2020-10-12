@@ -44,10 +44,10 @@ car_t* make_car(char *platep, double price, int year) {
 /* fn() checks if the car_t pointer matches with the provided key
  * returns bool
  */
-bool fn(void* p, const void* keyp) {
+bool fn(void* p, const void* keyp) { //requires (void* elementp, const void* keyp)
 	car_t *cp = (car_t*)p;
 	char *key = (char*)keyp;
-	if ( strcmp(cp->plate, key) == 0 )
+	if ( strcmp(cp->plate, key) == 0 ) //if match
 		return true;
 	else
 		return false;
@@ -73,9 +73,9 @@ int main (void) {
 	if (c != NULL) result++;
 
 	if ( result > 0 ) {
-		fprintf(stderr, "Error while searching with NULL inputs\n");
+		fprintf(stderr, "Error while searching with NULL input\n");
 		qclose(qp);
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); //no need to reset result bc will exit
 	}
 
 	//declare all cars
@@ -84,7 +84,7 @@ int main (void) {
 	cp[2] = make_car("car3", 9.0, 1990);
 	
 	// test with empty queue
-	qsearch((queue_t*)qp, fn, (void*)("randomString"));
+	qsearch((queue_t*)qp, fn, (void*)("randomString")); //should print Queue is empty
 	
 	result += qput(qp, (void*)cp[0]);
 	result += qput(qp, (void*)cp[1]);
@@ -104,13 +104,15 @@ int main (void) {
 	c = qsearch((queue_t*)qp, fn, cp[2]->plate);
 	if ( c != cp[2] ) result ++;
 	
+	//printf("result is %d\n", result);
+	
 	if ( result > 0 ) {
 		fprintf(stderr, "qsearch failed when it should have matched\n");
 		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
 
-	c = qsearch((queue_t*)qp, fn, "not_a_match");
+	c = qsearch((queue_t*)qp, fn, "not_a_match"); //test for search key with no match, should return NULL
 	if ( c != NULL ) result ++;
 	
 	if ( result > 0 ) {

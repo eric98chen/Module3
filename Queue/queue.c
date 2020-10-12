@@ -157,19 +157,21 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 	qheader_t *hp;
 	node_t *p;
 	
-	if (qp == NULL || fn == NULL ) {	
+	if (qp == NULL || fn == NULL ) {	//checks inputs
 		printf("qp or fn is NULL\n");
-	} else {
+	} 
+	else {
 		hp = (qheader_t*)qp;
 		if ( hp->front == NULL ) {
 			printf("queue is empty\n");
-		} else {
+		} 
+		else {
 			printf("Applying function to every element of the queue.\n");
-
-			p = hp->front;
-			while (p != NULL){
-				if(p->data != NULL){
-					fn(p->data);
+			
+			p = hp->front; //select first node of queue
+			while (p != NULL) {	//loop through each node of queue
+				if(p->data != NULL) {
+					fn(p->data);	//apply function to data
 				}
 				p = p->next;
 			}
@@ -181,46 +183,52 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 /* search a queue using a supplied boolean function
  * skeyp -- a key to search for
  * searchfn -- a function applied to every element of the queue
- *          -- elementp - a pointer to an element
- *          -- keyp - the key being searched for (i.e. will be 
- *             set to skey at each step of the search
+ *          -- elementp - a pointer to an element (that is being entered in search function)
+ *          -- keyp - the key being searched for (i.e. will be set to skey at each step of the search)
  *          -- returns TRUE or FALSE as defined in bool.h
  * returns a pointer to an element, or NULL if not found
  */
-void* qsearch(queue_t *qp, 
-							bool (*searchfn)(void* elementp,const void* keyp),
-							const void* skeyp){
+void* qsearch(queue_t *qp, bool (*searchfn)(void* elementp,const void* keyp), const void* skeyp){
+
+/*NOTE: the reason we pass in a bool searchfn (instead of doing the search comparison directly in here), 
+		is because we don't know what datatype will be used for the search. By passing in a bool searchfn,
+		the output becomes data agnostic - the user can code the search function in the main and choose to
+		compare any datatypes, as long as the function returns true for match, else false
+*/
 	qheader_t *hp;
 	node_t *p;
 	bool result;
 	
-	if (qp == NULL) {	
+	if (qp == NULL) {	//check inputs
 		printf("Queue is NULL\n");
 		return NULL;
 	}
-	hp = (qheader_t*)qp;
-	
 	if (searchfn==NULL) {
 		printf("Error. Function is NULL\n");
 		return NULL;
 	}
+	
+	hp = (qheader_t*)qp;
+	
 	if (hp->front==NULL) {
 		printf("Queue is empty\n");
 		return NULL;
 	}
 	else {
-		printf("Applying function to every element of the queue.\n");
+		printf("Applying search function to every element of the queue.\n");
 
-		p = hp->front;
-		while (p != NULL){
+		p = hp->front; //select first node of queue
+		while (p != NULL){	//loop through each node of queue
 			if(p->data != NULL){
-				if ((result = searchfn(p->data, skeyp)) == true){
-					return(p);
+				if ((result = searchfn(p->data, skeyp)) == true){ //pass data stored in node into search function. returns boolean
+					printf("Match found based on search key\n");
+					return(p->data);	//returns pointer to element if boolean is true (aka match found!)
 				}
 			}
 			p = p->next;
 		}
-		return NULL;
+		printf("No match found based on search key\n");
+		return NULL; //if no matches
 	}						
 }
 
