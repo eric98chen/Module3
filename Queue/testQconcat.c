@@ -160,7 +160,6 @@ int main (void) {
 	}
 	
 	qclose(qp1);
-	qclose(qp2);
 	
 	exit(EXIT_SUCCESS);
 }
