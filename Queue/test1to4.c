@@ -101,27 +101,19 @@ int main (void) {
 	sp1 = make_student("Eric",2021); //declare all students
 	sp2 = make_student("David",2020); 
 	
-	if((result = qput(qp, (void*)cp1)) != 0){ //Put to empty queue. Returns 1 if any error
-		printf("qput1 failed\n");
+	result = 0;
+	result += qput(qp, (void*)cp1); //put to empty queue (returns 1 if any error)
+	result += qput(qp, (void*)cp2); //put into non-empty queue
+	result += qput(qp, (void*)cp3);
+	result += qput(qp, (void*)sp1);	//put different objects into same queue
+	result += qput(qp, (void*)sp2);
+
+	if ( result > 0 ) {
+		printf("qput error \n");
+		qclose(qp);	//need to free memory of everuthing already put
 		exit(EXIT_FAILURE);
 	}
-	if((result = qput(qp, (void*)cp2)) != 0){ //Put into non-empty queue
-		printf("qput2 failed\n");
-		exit(EXIT_FAILURE);
-	}
-	if((result = qput(qp, (void*)cp3)) != 0){
-		printf("qput3 failed\n");
-		exit(EXIT_FAILURE);
-	}
-	if((result = qput(qp, (void*)sp1)) != 0){
-		printf("qput4 failed\n");
-		exit(EXIT_FAILURE);
-	}
-	if((result = qput(qp, (void*)sp2)) != 0){
-		printf("qput5 failed\n");
-		exit(EXIT_FAILURE);
-	}
-	printf("qput cases successful\n\n");
+	else printf("qput cases successful\n\n");
 	
 	cp1->year = 0000; //can directly alter the data stored queue from this main code
  
