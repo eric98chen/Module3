@@ -1,6 +1,6 @@
 CFLAGS=-Wall -pedantic -std=c11 -I. -g
 
-all:			chrisTest test1to4 testQapply testQsearch testQconcat
+all:			chrisTest test1to4 testQapply testQsearch testQremove testQconcat
 
 queue.o: 		queue.c queue.h
 					gcc $(CFLAGS) -c queue.c
@@ -29,6 +29,12 @@ testQsearch.o:testQsearch.c queue.h
 testQsearch:	testQsearch.o queue.o
 					gcc $(CFLAGS) testQsearch.o queue.o -o testQsearch
 
+testQremove.o:testQremove.c queue.h
+					gcc $(CFLAGS) -c testQremove.c
+
+testQremove:	testQremove.o queue.o
+					gcc $(CFLAGS) testQremove.o queue.o -o testQremove
+
 testQconcat.o:testQconcat.c queue.h
 					gcc $(CFLAGS) -c testQconcat.c
 
@@ -36,4 +42,4 @@ testQconcat:	testQconcat.o queue.o
 					gcc $(CFLAGS) testQconcat.o queue.o -o testQconcat
 
 clean:			
-					rm -f *.o chrisTest test1to4 testQapply testQsearch testQconcat
+					rm -f *.o chrisTest test1to4 testQapply testQsearch testQremove testQconcat
