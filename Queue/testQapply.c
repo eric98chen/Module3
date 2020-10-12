@@ -28,7 +28,7 @@ typedef struct car {
 /* makeCar(): creates a car object */
 car_t* make_car(char *platep, double price, int year) {
 	car_t *cp;
-	if ((cp = (car_t*)malloc(sizeof(car_t))) == NULL) { 	//check if enough space in memory for car_t*
+	if ((cp = (car_t*)malloc(sizeof(car_t))) == NULL) { //check if enough space in memory for car_t*
 		printf("Error: malloc failed allocating car\n");
 		return NULL;
 	}
