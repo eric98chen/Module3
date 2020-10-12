@@ -65,8 +65,8 @@ int main (void) {
 	qapply(NULL, fn);
 	qapply((queue_t*)qp, NULL);
 
-	// test with empty queue
-	qapply((queue_t*)qp, fn);
+	// test with empty queue, should print queue is empty
+	qapply((queue_t*)qp, fn); //why need to recast qp?
 	
 	result = 0;
 	result += qput(qp, (void*)cp[0]);
@@ -79,7 +79,7 @@ int main (void) {
 		exit(EXIT_FAILURE);
 	}
 
-	qapply((queue_t*)qp, fn);
+	qapply((queue_t*)qp, fn); //test with non-empty queue, should print "Applying function,,,"
 
 	for ( i=0; i<3; i++ ) {
 		if ( cp[i]->year != 0 )
@@ -87,10 +87,11 @@ int main (void) {
 	}
 
 	if ( result > 0 ) {
-		fprintf(stderr, "qapply failed to implement on full queue\n");
+		fprintf(stderr, "qapply failed to implement on non-empty queue\n");
 		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
+	else printf("qapply successful");
 	
 	qclose(qp);
 	
