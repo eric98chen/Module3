@@ -65,6 +65,9 @@ int main (void) {
 	qapply(NULL, fn);
 	qapply((queue_t*)qp, NULL);
 
+	// test with empty queue
+	qapply((queue_t*)qp, fn);
+	
 	result = 0;
 	result += qput(qp, (void*)cp[0]);
 	result += qput(qp, (void*)cp[1]);
