@@ -33,7 +33,6 @@ static node_t* make_node(void *elementp) {
 	
 	p->data = elementp; //both of type void
 	p->next = NULL;
-	printf("Address: %p \n", p->data);
 	return p;
 }
 
@@ -158,26 +157,22 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 	qheader_t *hp;
 	node_t *p;
 	
-	if (qp == NULL) {	
-		printf("Queue is NULL\n");
-	}
-	hp = (qheader_t*)qp;
-	
-	if (fn==NULL) {
-		printf("Error. Function is NULL\n");
-	}
-	if (hp->front==NULL) {
-		printf("Queue is empty\n");
-	}
-	else {
-		printf("Applying function to every element of the queue.\n");
+	if (qp == NULL || fn == NULL ) {	
+		printf("qp or fn is NULL\n");
+	} else {
+		hp = (qheader_t*)qp;
+		if ( hp->front == NULL ) {
+			printf("queue is empty\n");
+		} else {
+			printf("Applying function to every element of the queue.\n");
 
-		p = hp->front;
-		while (p != NULL){
-			if(p->data != NULL){
-				fn(p->data);
+			p = hp->front;
+			while (p != NULL){
+				if(p->data != NULL){
+					fn(p->data);
+				}
+				p = p->next;
 			}
-			p = p->next;
 		}
 	}
 }
