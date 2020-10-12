@@ -54,6 +54,7 @@ student_t* make_student(char *namep, int year) {
 		printf("Error: malloc failed allocating car\n");
 		return NULL;
 	}
+	printf("student malloc succesful\n");
 	strcpy(sp->name, namep);
 	sp->year = year;
 	return sp;
@@ -70,15 +71,18 @@ void fn(car_t *cp) {
  
 int main (void) {
 
-	queue_t *qp; //agnostic queue
-	queue_t *qpNULL = NULL;
-	car_t *cp1;
-	car_t *cp2;
-	car_t *cp3;
-	car_t *cpNULL = NULL;
-	car_t *cpFirst, *cpSecond, *cpThird;
 	int32_t result;
 
+	queue_t *qp; //agnostic queue, can hole cars and students
+	queue_t *qpNULL = NULL; //dumby queue
+	
+	car_t *cp1, *cp2, *cp3;
+	car_t *cpNULL = NULL;
+	car_t *cpFirst, *cpSecond, *cpThird;\
+	
+	student_t *sp1, *sp2;
+	student_t *spFirst, *spSecond;
+	
 	
 	//TEST QOPEN
 	qp = qopen(); //returns pointer to newly created queue_t
@@ -86,13 +90,16 @@ int main (void) {
 
 
 	//TEST QPUT
-	if((result = qput(qp, (void*)cpNULL)) != 0){ //put a NULL element
+	if((result = qput(qp, (void*)cpNULL)) != 0){ //testing qput with NULL element
 		printf(">> qput (cpNULL) occurred as expected\n");
 	}
 	
 	cp1 = make_car("car1", 1.0, 1910); //declare all cars
 	cp2 = make_car("car2", 4.0, 1940);
 	cp3 = make_car("car3", 9.0, 1990);
+	
+	sp1 = make_student("Eric",2021); //declare all students
+	sp2 = make_student("David",2020); 
 	
 	if((result = qput(qp, (void*)cp1)) != 0){ //Put to empty queue. Returns 1 if any error
 		printf("qput1 failed\n");
@@ -106,23 +113,38 @@ int main (void) {
 		printf("qput3 failed\n");
 		exit(EXIT_FAILURE);
 	}
+	if((result = qput(qp, (void*)sp1)) != 0){
+		printf("qput4 failed\n");
+		exit(EXIT_FAILURE);
+	}
+	if((result = qput(qp, (void*)sp2)) != 0){
+		printf("qput5 failed\n");
+		exit(EXIT_FAILURE);
+	}
 	printf("qput cases successful\n\n");
 	
-	cp1->year = 0000;
+	cp1->year = 0000; //can directly alter the data stored queue from this main code
  
  
  	//TEST QGET
  	cpNULL =(car_t*)qget(qpNULL); //get from NULL queue
  	printf(">>qget (qpNULL) occurred as expected\n");
 
-	cpFirst = (car_t*)qget(qp); //get from queue. Need to coerce void pointer into car_t pointer
+	cpFirst = (car_t*)qget(qp); //get from queue. Need to coerce void pointer into correct object pointer
 	cpSecond = (car_t*)qget(qp); 
-	cpThird = (car_t*)qget(qp);	//get last element from queue
-	//cpNULL = (car_t*)qget(qp); //get from empty queue
+	cpThird = (car_t*)qget(qp);	
+	spFirst = (student_t*)qget(qp);
+	spSecond = (student_t*)qget(qp); //get last element from queue
 
-	printf("Car 1: plate = %s, price = %f, year = %d\n", cpFirst->plate, cpFirst->price, cpFirst->year);
+	cpNULL = (car_t*)qget(qp); //get from empty queue
+	printf(">>qget from empty queue occurred as expected\n");
+
+	printf("Car 1: plate = %s, price = %f, year = %d\n", cpFirst->plate, cpFirst->price, cpFirst->year); //show all data in queue
 	printf("Car 2: plate = %s, price = %f, year = %d\n", cpSecond->plate, cpSecond->price, cpSecond->year);
 	printf("Car 3: plate = %s, price = %f, year = %d\n", cpThird->plate, cpThird->price, cpThird->year);
+	printf("Student 1: name = %s, year = %d\n", spFirst->name, sp1->year); //sp1 and spFirst point to same memory
+	printf("Student 2: name = %s, year = %d\n", sp2->name, spSecond->year);
+
 	printf("qget successful\n\n");
 	
 	
@@ -136,30 +158,11 @@ int main (void) {
 	free(cpFirst);
 	free(cpSecond);
 	free(cpThird);
+	free(spFirst);
+	free(spSecond);
 
 	exit(EXIT_SUCCESS);
 }
 
-	
-/*	//TEST QPUT
-	car_t *cp1, *cp2, *first;
-	cp1 = make_car(NULL,"2LLE50",20000.0,2014); //returns pointer to newly created car_t object
-	cp2 = make_car(NULL,"NNHS16",30000.0,2016);
-	
-	uint32_t qput_return = qput(qp,(void*)cp1); //puts car_t object into queue_t object
 
-	if (qput_return==0) {
-		printf("qput success\n"); //check if qput function worked
-	}
-	else {
-		printf("qput failed\n");
-	}
-	
-
-	//TEST QGET()
-	first = (car_t*)qget(); //qget() returns pointer to object of type void, so need to coerce into car_t type
-	printf("First car is: %s, %f, %d\n",first->plate, first->price, first->year);
-	printf("qget success\n");
-	
-*/
  
