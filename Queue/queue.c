@@ -37,6 +37,7 @@ static node_t* make_node(void *elementp) {
 	return p;
 }
 
+
 /* the queue representation is hidden from users of the module */
 typedef struct qheader {
 	node_t *front;
@@ -120,7 +121,6 @@ int32_t qput(queue_t *qp, void *elementp) {
 }
 
 
-
 /* get the first element from queue, removing it from the queue */
 void* qget(queue_t *qp) {
 	qheader_t *hp;
@@ -153,11 +153,8 @@ void* qget(queue_t *qp) {
 }
 
 
-//NOTE: commenting out functions below bc compiler found errors but I'm only trying to test first 4 functions
-
 /* apply a function to every element of the queue */
-
-/*void qapply(queue_t *qp, void (*fn)(void* elementp)) {
+void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 	qheader_t *hp;
 	node_t *p;
 	
@@ -184,8 +181,6 @@ void* qget(queue_t *qp) {
 		}
 	}
 }
-*/
-
 
 
 /* search a queue using a supplied boolean function
@@ -197,7 +192,7 @@ void* qget(queue_t *qp) {
  *          -- returns TRUE or FALSE as defined in bool.h
  * returns a pointer to an element, or NULL if not found
  */
-/*void* qsearch(queue_t *qp, 
+void* qsearch(queue_t *qp, 
 							bool (*searchfn)(void* elementp,const void* keyp),
 							const void* skeyp){
 	qheader_t *hp;
@@ -222,7 +217,7 @@ void* qget(queue_t *qp) {
 		printf("Applying function to every element of the queue.\n");
 
 		p = hp->front;
-		while (curr != NULL){
+		while (p != NULL){
 			if(p->data != NULL){
 				if ((result = searchfn(p->data, skeyp)) == true){
 					return(p);
@@ -233,13 +228,13 @@ void* qget(queue_t *qp) {
 		return NULL;
 	}						
 }
-*/
+
 
 /* search a queue using a supplied boolean function (as in qsearch),
  * removes the element from the queue and returns a pointer to it or
  * NULL if not found
  */
-/*void* qremove(queue_t *qp,
+void* qremove(queue_t *qp,
 							bool (*searchfn)(void* elementp,const void* keyp),
 							const void* skeyp){
 	qheader_t *hp;
@@ -284,19 +279,18 @@ void* qget(queue_t *qp) {
 		return NULL;
 	}						
 }
-*/
 
 
 /* concatenatenates elements of q2 into q1
  * q2 is dealocated, closed, and unusable upon completion 
  */
-/*void qconcat(queue_t *q1p, queue_t *q2p){
+void qconcat(queue_t *q1p, queue_t *q2p){
 	node_t *p;
 	qheader_t *hp1;
 	qheader_t *hp2;
 	node_t *curr;
 
-	if ((q1p == NULL) || (q2p == NULL) {	
+	if ((q1p == NULL) || (q2p == NULL)) {	
 		printf("Queue is NULL\n");
 	}
 	
@@ -305,7 +299,6 @@ void* qget(queue_t *qp) {
 	
 	if ((hp1->front==NULL) || (hp1->front==NULL)) {
 		printf("Queue is empty\n");
-		return NULL;
 	}
 
 	curr = hp2->front;
@@ -318,8 +311,5 @@ void* qget(queue_t *qp) {
 
 	qclose(q2p);
 }
-*/
-
-
 
 
