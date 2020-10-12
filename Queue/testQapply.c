@@ -51,32 +51,44 @@ void fn(void *p) {
 
 int main (void) {
 	queue_t *qp; //agnostic queue
-	car_t *cp1;
-	car_t *cp2;
-	car_t *cp3;
-	int32_t result;
+	car_t *cp[3];
+	int32_t result, i;
 	
 	qp = qopen(); //returns pointer to newly created queue_t
 
-	cp1 = make_car("car1", 1.0, 1910); //declare all cars
-	cp2 = make_car("car2", 4.0, 1940);
-	cp3 = make_car("car3", 9.0, 1990);
+	cp[0] = make_car("car1", 1.0, 1910); //declare all cars
+	cp[1] = make_car("car2", 4.0, 1940);
+	cp[2] = make_car("car3", 9.0, 1990);
 
 	// test with NULLs
 	qapply(NULL, NULL);
-	qapply(NULL, &fn);
+	qapply(NULL, fn);
 	qapply((queue_t*)qp, NULL);
 
 	result = 0;
-	result += qput(qp, (void*)cp1);
-	result += qput(qp, (void*)cp2);
-	result += qput(qp, (void*)cp3);
+	result += qput(qp, (void*)cp[0]);
+	result += qput(qp, (void*)cp[1]);
+	result += qput(qp, (void*)cp[2]);
 
 	if ( result > 0 ) {
 		fprintf(stderr, "Error while adding cars to queue\n");
+		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
-	 
+
+	qapply((queue_t*)qp, fn);
+
+	for ( i=0; i<3; i++ ) {
+		if ( cp[i]->year != 0 )
+			result++;
+	}
+
+	if ( result > 0 ) {
+		fprintf(stderr, "qapply failed to implement on full queue\n");
+		qclose(qp);
+		exit(EXIT_FAILURE);
+	}
+	
 	qclose(qp);
 	
 	exit(EXIT_SUCCESS);
