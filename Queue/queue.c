@@ -288,31 +288,25 @@ void* qremove(queue_t *qp,
  * q2 is dealocated, closed, and unusable upon completion 
  */
 void qconcat(queue_t *q1p, queue_t *q2p){
-	node_t *p;
 	qheader_t *hp1;
 	qheader_t *hp2;
-	node_t *curr;
 
 	if ((q1p == NULL) || (q2p == NULL)) {	
 		printf("Queue is NULL\n");
-	}
+	} else {
 	
-	hp1 = (qheader_t*)q1p;
-	hp2 = (qheader_t*)q2p;
+		hp1 = (qheader_t*)q1p;
+		hp2 = (qheader_t*)q2p;
 	
-	if ((hp1->front==NULL) || (hp1->front==NULL)) {
-		printf("Queue is empty\n");
+		if (hp2->front == NULL) {
+			free(hp2);
+		}	else if (hp1->front == NULL) {
+			hp1->front = hp2->front;
+			hp1->back = hp2->back;
+		} else {
+			(hp1->back)->next = hp2->front;
+			hp1->back = hp2->back;
+			free(hp2);
+		}
 	}
-
-	curr = hp2->front;
-	while (curr != NULL){
-		p = make_node(curr->data);
-		hp1->back->next = p;
-		hp1->back = p;
-		curr = curr->next;
-	}
-
-	qclose(q2p);
 }
-
-
