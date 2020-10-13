@@ -85,13 +85,13 @@ int main (void) {
 	student_t *sp1, *sp2;
 	student_t *spFirst, *spSecond;
 	
-	cp1 = make_car("car1", 1.0, 1910); //declare all cars
+	/*cp1 = make_car("car1", 1.0, 1910); //declare all cars
 	cp2 = make_car("car2", 4.0, 1940);
 	cp3 = make_car("car3", 9.0, 1990);
 	
 	sp1 = make_student("Eric",2021); //declare all students
 	sp2 = make_student("David",2020); 
-	
+	*/
 
 	// TEST HOPEN
 	hp = hopen(hsize); //returns pointer to newly created hashtable_t
@@ -102,11 +102,11 @@ int main (void) {
 	else printf("hopen successful\n\n");
 	
 	
-	
+	/*
 	//int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
 	//
 	// TEST HPUT
-	if((result = hput(hp, cp1, cp1->plate, strlen(cp1->plate)) == 0){ //testing qput with NULL element
+	if((result = hput(hp, cpNULL, cpNULL->plate, strlen(cpNULL->plate))) == 0){ //testing hput with NULL element
 		printf(">>ISSUE: qput succeeded with NULL element when should have failed\n");
 		exit(EXIT_FAILURE);
 	}
@@ -131,7 +131,6 @@ int main (void) {
 	
 	cp1->year = 0000; //can directly alter the data stored queue from this main code
  	*/
- 
 	
 	
 	// TEST HCLOSE
