@@ -191,7 +191,7 @@ void *hsearch(hashtable_t *htp,
 	hheader_t *hp;
 	uint32_t slot;
 
-	if ( htp == NULL || searchfn == NULL || key == NULL || searchkeyp == NULL) {
+	if ( htp == NULL || searchfn == NULL || key == NULL) {
 		print("hsearcj():\tError. One or more inputs are NULL.");
 		return NULL;
 	}
@@ -204,7 +204,7 @@ void *hsearch(hashtable_t *htp,
 	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key -> determines which queue to look into
 	
 	print("hsearch():\tReturning result of hsearch().");
-	void* nodeMatch = qsearch((hp->table)[slot], searchfn, key) //qsearch returns pointer to matching element in queue
+	void* nodeMatch = qsearch((hp->table)[slot], searchfn, key); //qsearch returns pointer to matching element in queue
 	return nodeMatch; 
 
 }
