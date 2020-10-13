@@ -33,9 +33,9 @@ static node_t* make_node(void *elementp) {
 	
 	p->data = elementp; //both of type void
 	p->next = NULL;
-	printf("Address: %p \n", p->data);
 	return p;
 }
+
 
 /* the queue representation is hidden from users of the module */
 typedef struct qheader {
@@ -120,7 +120,6 @@ int32_t qput(queue_t *qp, void *elementp) {
 }
 
 
-
 /* get the first element from queue, removing it from the queue */
 void* qget(queue_t *qp) {
 	qheader_t *hp;
@@ -153,173 +152,178 @@ void* qget(queue_t *qp) {
 }
 
 
-//NOTE: commenting out functions below bc compiler found errors but I'm only trying to test first 4 functions
-
 /* apply a function to every element of the queue */
-
-/*void qapply(queue_t *qp, void (*fn)(void* elementp)) {
+void qapply(queue_t *qp, void (*fn)(void* elementp)) {
 	qheader_t *hp;
 	node_t *p;
 	
-	if (qp == NULL) {	
-		printf("Queue is NULL\n");
-	}
-	hp = (qheader_t*)qp;
-	
-	if (fn==NULL) {
-		printf("Error. Function is NULL\n");
-	}
-	if (hp->front==NULL) {
-		printf("Queue is empty\n");
-	}
+	if (qp == NULL || fn == NULL ) {	//checks inputs
+		printf("qp or fn is NULL\n");
+	} 
 	else {
-		printf("Applying function to every element of the queue.\n");
-
-		p = hp->front;
-		while (p != NULL){
-			if(p->data != NULL){
-				fn(p->data);
+		hp = (qheader_t*)qp;
+		if ( hp->front == NULL ) {
+			printf("queue is empty\n");
+		} 
+		else {
+			printf("Applying function to every element of the queue.\n");
+			
+			p = hp->front; //select first node of queue
+			while (p != NULL) {	//loop through each node of queue
+				if(p->data != NULL) {
+					fn(p->data);	//apply function to data
+				}
+				p = p->next;
 			}
-			p = p->next;
 		}
 	}
 }
-*/
-
 
 
 /* search a queue using a supplied boolean function
  * skeyp -- a key to search for
  * searchfn -- a function applied to every element of the queue
- *          -- elementp - a pointer to an element
- *          -- keyp - the key being searched for (i.e. will be 
- *             set to skey at each step of the search
+ *          -- elementp - a pointer to an element (that is being entered in search function)
+ *          -- keyp - the key being searched for (i.e. will be set to skey at each step of the search)
  *          -- returns TRUE or FALSE as defined in bool.h
  * returns a pointer to an element, or NULL if not found
  */
-/*void* qsearch(queue_t *qp, 
-							bool (*searchfn)(void* elementp,const void* keyp),
-							const void* skeyp){
+void* qsearch(queue_t *qp, bool (*searchfn)(void* elementp,const void* keyp), const void* skeyp){
+
+/*NOTE: the reason we pass in a bool searchfn (instead of doing the search comparison directly in here), 
+		is because we don't know what datatype will be used for the search. By passing in a bool searchfn,
+		the output becomes data agnostic - the user can code the search function in the main and choose to
+		compare any datatypes, as long as the function returns true for match, else false
+*/
 	qheader_t *hp;
 	node_t *p;
 	bool result;
 	
-	if (qp == NULL) {	
+	if (qp == NULL) {	//check inputs
 		printf("Queue is NULL\n");
 		return NULL;
 	}
-	hp = (qheader_t*)qp;
-	
 	if (searchfn==NULL) {
 		printf("Error. Function is NULL\n");
 		return NULL;
 	}
+	
+	hp = (qheader_t*)qp;
+	
 	if (hp->front==NULL) {
 		printf("Queue is empty\n");
 		return NULL;
 	}
 	else {
-		printf("Applying function to every element of the queue.\n");
+		printf("Applying search function to every element of the queue.\n");
 
-		p = hp->front;
-		while (curr != NULL){
+		p = hp->front; //select first node of queue
+		while (p != NULL){	//loop through each node of queue
 			if(p->data != NULL){
-				if ((result = searchfn(p->data, skeyp)) == true){
-					return(p);
+				if ((result = searchfn(p->data, skeyp)) == true){ //pass data stored in node into search function. returns boolean
+					printf("Match found based on search key\n");
+					return(p->data);	//returns pointer to element if boolean is true (aka match found!)
 				}
 			}
 			p = p->next;
 		}
-		return NULL;
+		printf("No match found based on search key\n");
+		return NULL; //if no matches
 	}						
 }
-*/
+
 
 /* search a queue using a supplied boolean function (as in qsearch),
  * removes the element from the queue and returns a pointer to it or
  * NULL if not found
  */
-/*void* qremove(queue_t *qp,
+void* qremove(queue_t *qp,
 							bool (*searchfn)(void* elementp,const void* keyp),
 							const void* skeyp){
 	qheader_t *hp;
-	node_t *prev;
-	node_t *curr;
+	node_t *prev, *curr; //pointers to help restitch list after an element is removed
 	bool result;
 	void *tmp;
 	
-	if (qp == NULL) {	
+	if (qp == NULL) {	//check inputs
 		printf("Queue is NULL\n");
 		return NULL;
 	}
-	hp = (qheader_t*)qp;
-	
 	if (searchfn==NULL) {
 		printf("Error. Function is NULL\n");
 		return NULL;
 	}
+	
+	hp = (qheader_t*)qp;
+	
 	if (hp->front==NULL) {
 		printf("Queue is empty\n");
 		return NULL;
 	}
 	else {
-		printf("Applying function to every element of the queue.\n");
+		printf("Applying search function to the queue.\n");
 
-		curr = hp->front;
-		while (curr != NULL){
-			prev = curr;
-			if(prev->data != NULL){
-				if ((result = searchfn(prev->data, skeyp)) == true){
-					tmp = prev->data;
-					//if(prev->data != NULL){ //cant free data here. Causes memory issue. Instead, free in test main
-					//	free(prev->data);
-					//}
-					free(prev); //OK to free prev, bc refers to the node_t *next pointer, not the data returned
-					printf("Searched element removed and returned\n");
-					return tmp; //returns first element
+		curr = hp->front; //start at fromt of queue
+		
+		while (curr != NULL){ //loop until reach end of queue,
+	
+			if(curr->data != NULL){ //if node has data, then check for match
+				if ((result = searchfn(prev->data, skeyp)) == true){ //IF MATCH FOUND
+									
+					printf("Searched element found, removed, and returned\n");
+
+					if(curr==hp->front) { //if match is first node
+						hp->front = hp->front->next;//removes node from list (by updating front to point to 2nd node)
+						tmp = curr->data; 			//capture matching data
+						free(curr); 				//free matching node (now removed from list)
+						return tmp; 				//returns matching data
+					}
+					else { //if match is not first node (at this point already ran through while loop once)
+						prev->next = curr->next; 	//removes node from list (by skipping over)
+						tmp = curr->data; 			//capture matching data
+						free(curr);					//free matching node (now removed from list)
+						return tmp;					//return matching data
+					}
+				}
+				else {	//IF NODE IS NOT A MATCH
+					prev = curr; //keep track of previous node (s.t. prev is always 1 node behind curr)
+					curr = curr->next; //update curr to next node
 				}
 			}
-			curr = prev->next;
+			else printf("A node is missing data\n"); //only executes if curr->data == NULL
+
 		}
 		return NULL;
 	}						
 }
-*/
+
 
 
 /* concatenatenates elements of q2 into q1
  * q2 is dealocated, closed, and unusable upon completion 
  */
-/*void qconcat(queue_t *q1p, queue_t *q2p){
-	node_t *p;
+void qconcat(queue_t *q1p, queue_t *q2p){
 	qheader_t *hp1;
 	qheader_t *hp2;
-	node_t *curr;
 
-	if ((q1p == NULL) || (q2p == NULL) {	
+	if ((q1p == NULL) || (q2p == NULL)) {	
 		printf("Queue is NULL\n");
-	}
+	} 
+	else {
 	
-	hp1 = (qheader_t*)q1p;
-	hp2 = (qheader_t*)q2p;
+		hp1 = (qheader_t*)q1p;
+		hp2 = (qheader_t*)q2p;
 	
-	if ((hp1->front==NULL) || (hp1->front==NULL)) {
-		printf("Queue is empty\n");
-		return NULL;
+		if (hp2->front == NULL) {
+			free(hp2);
+		}	
+		else if (hp1->front == NULL) {
+			hp1->front = hp2->front;
+			hp1->back = hp2->back;
+		} else {
+			(hp1->back)->next = hp2->front;
+			hp1->back = hp2->back;
+			free(hp2);
+		}
 	}
-
-	curr = hp2->front;
-	while (curr != NULL){
-		p = make_node(curr->data);
-		hp1->back->next = p;
-		hp1->back = p;
-		curr = curr->next;
-	}
-
-	qclose(q2p);
 }
-*/
-
-
-
-
