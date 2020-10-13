@@ -234,7 +234,7 @@ void *hremove(hashtable_t *htp,
 	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
 
 	print("hremove():\tReturning result of hremove().");
-	void *nodeMatch = qremove((hp->table)[slot], searchfn, key);  // qremove removes and  returns element
+	void *nodeMatch = qremove((hp->table)[slot], searchfn, key);  // qremove removes and returns element
 	return nodeMatch;
 }
 

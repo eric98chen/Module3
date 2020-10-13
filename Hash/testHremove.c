@@ -100,25 +100,25 @@ int main (void) {
 	else printf(">>removing from empty hashtable occurred as expected\n");
 	
 	// assuming hput is good
-	hput(hp, (void*)cp[0], cp[0]->plate, 5); 
+	hput(hp, (void*)cp[0], cp[0]->plate, strlen(cp[0]->plate)); 
 	hput(hp, (void*)cp[1], cp[1]->plate, strlen(cp[1]->plate));
 	hput(hp, (void*)cp[2], cp[2]->plate, strlen(cp[2]->plate));
 
 
 	// test successful match cases
 	cp1 = hremove(hp, fn, cp[0]->plate, strlen(cp[0]->plate)); //HREMOVE requires (*htp, *searchfn, char *key, keylen)
-	if ( c != cp[0] ) result ++;
+	if ( cp1 != cp[0] ) result ++;
 	cp2 = hremove(hp, fn, cp[1]->plate, strlen(cp[1]->plate));
-	if ( c != cp[1] ) result ++;
+	if ( cp2 != cp[1] ) result ++;
 	cp3 = hremove(hp, fn, cp[2]->plate, strlen(cp[2]->plate)); //removing last element from hashtable
-	if ( c != cp[2] ) result ++;
+	if ( cp3 != cp[2] ) result ++;
 	
-	//printf("result is %d\n", result); //result>0 if any of the hsearch failed
+	printf("result is %d\n", result); //result>0 if any of the hsearch failed
 	printf("hash table should now be empty\n");
 	
-	hput(hp, (void*)cp[3], cp[3]->plate, 6);
+	hput(hp, (void*)cp[3], cp[3]->plate, strlen(cp[3]->plate));
 	hput(hp, (void*)cp[4], cp[4]->plate, strlen(cp[4]->plate));
-		
+	
 	if ((hremove(hp, fn, "not_a_match", 6)) != NULL) { //test for search key (and keylen) with no match, should return NULL
 		fprintf(stderr, "qremove failed when it should have not matched\n");
 		hclose(hp);
@@ -135,6 +135,8 @@ int main (void) {
 	free(cp1); //need to free pointers for elements that were removed from hash table
 	free(cp2);
 	free(cp3);
+	//free(cp[3]);
+	//free(cp[4]);
 	
 	hclose(hp);
 	
