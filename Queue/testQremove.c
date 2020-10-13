@@ -58,6 +58,7 @@ int main (void) {
 	queue_t *qp; //agnostic queue
 	car_t *cp[5];
 	car_t *c = NULL;
+	car_t *cp1, *cp2, *cp3;
 	int32_t result=0;
 	
 	qp = qopen(); //returns pointer to newly created queue_t
@@ -105,12 +106,12 @@ int main (void) {
 	}
 
 	// test successful match cases
-	c = qremove((queue_t*)qp, fn, cp[0]->plate);
-	if ( c != cp[0] ) result ++;
-	c = qremove((queue_t*)qp, fn, cp[2]->plate);
-	if ( c != cp[2] ) result ++;
-	c = qremove((queue_t*)qp, fn, cp[1]->plate);
-	if ( c != cp[1] ) result ++;
+	cp1 = qremove((queue_t*)qp, fn, cp[0]->plate);
+	if ( cp1 != cp[0] ) result ++;
+	cp2 = qremove((queue_t*)qp, fn, cp[2]->plate);
+	if ( cp2 != cp[2] ) result ++;
+	cp3 = qremove((queue_t*)qp, fn, cp[1]->plate);
+	if ( cp3 != cp[1] ) result ++;
 	
 	if ( result > 0 ) {
 		fprintf(stderr, "ERROR. qremove failed when it should have matched\n");
@@ -129,6 +130,10 @@ int main (void) {
 		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
+	
+	free(cp1); //need to free pointers for elements that were removed from queue
+	free(cp2);
+	free(cp3);
 	
 	qclose(qp);
 	
