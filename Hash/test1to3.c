@@ -65,7 +65,8 @@ student_t* make_student(char *namep, int year) {
 /* fn() takes a car_t pointer and sets year of car_t to 0
  * returns nothing
  */
-void fn(car_t *cp) {
+void fn(void *p) {
+	car_t *cp = (car_t*)p;
 	cp->year = 0;
 }
 	
@@ -79,9 +80,6 @@ int main (void) {
 	hashtable_t *hpNULL = NULL; //dumby hashtable
 	
 	car_t *cp1, *cp2, *cp3;
-	car_t *cpNULL = NULL;
-	car_t *cpFirst, *cpSecond, *cpThird;
-	
 	
 	// TEST HOPEN
 	hp = hopen(hsize); //returns pointer to newly created hashtable_t
@@ -122,5 +120,3 @@ int main (void) {
 	
 	exit(EXIT_SUCCESS);
 }
-
- 
