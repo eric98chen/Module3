@@ -85,13 +85,7 @@ int main (void) {
 	student_t *sp1, *sp2;
 	student_t *spFirst, *spSecond;
 	
-	/*cp1 = make_car("car1", 1.0, 1910); //declare all cars
-	cp2 = make_car("car2", 4.0, 1940);
-	cp3 = make_car("car3", 9.0, 1990);
-	
-	sp1 = make_student("Eric",2021); //declare all students
-	sp2 = make_student("David",2020); 
-	*/
+
 
 	// TEST HOPEN
 	hp = hopen(hsize); //returns pointer to newly created hashtable_t
@@ -102,36 +96,32 @@ int main (void) {
 	else printf("hopen successful\n\n");
 	
 	
-	/*
+	
 	//int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
 	//
 	// TEST HPUT
-	if((result = hput(hp, cpNULL, cpNULL->plate, strlen(cpNULL->plate))) == 0){ //testing hput with NULL element
-		printf(">>ISSUE: qput succeeded with NULL element when should have failed\n");
-		exit(EXIT_FAILURE);
-	}
-	else printf(">> qput (cpNULL) occurred as expected\n");
+	cp1 = make_car("car1", 1.0, 1910); //declare all cars
+	cp2 = make_car("car2", 4.0, 1940);
+	cp3 = make_car("car3", 9.0, 1990);
 	
-	/*sp1 = make_student("Eric",2021); //declare all students
-	sp2 = make_student("David",2020); 
+	sp1 = make_student("Eric",2021); //declare all students
+	sp2 = make_student("David",2020);
 	
 	result = 0;
-	result += qput(qp, (void*)cp1); //put to empty queue (returns 1 if any error)
-	result += qput(qp, (void*)cp2); //put into non-empty queue
-	result += qput(qp, (void*)cp3);
-	result += qput(qp, (void*)sp1);	//put different objects into same queue
-	result += qput(qp, (void*)sp2);
+	result += hput(hp, (void*)cp1, cp1->plate, strlen(cp1->plate)); //put to empty queue (returns 1 if any error)
+	result += hput(hp, (void*)cp2, cp2->plate, strlen(cp2->plate)); //put into non-empty queue
+	result += hput(hp, (void*)cp3, cp3->plate, strlen(cp3->plate));
 
 	if ( result > 0 ) {
-		printf("qput error \n");
-		qclose(qp);	//need to free memory of everything already put into queue
+		printf("hput error \n");
+		hclose(hp);	//need to free memory of everything already put into hash
 		exit(EXIT_FAILURE);
 	}
-	else printf("qput cases successful\n\n");
+	else printf("hput cases successful\n\n");
 	
 	cp1->year = 0000; //can directly alter the data stored queue from this main code
- 	*/
-	
+ 	
+ 	
 	
 	// TEST HCLOSE
 	hclose(hpNULL); //close a NULL queue
