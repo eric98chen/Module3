@@ -7,15 +7,29 @@
 #include <stdio.h>
 #include "queue.h"
 #include "hash.h"
+#include <stdbool.h>
 
 #define get16bits(d) (*((const uint16_t *) (d)))
 
+static bool print_message = true; // control printing to screen
 
 /* the hash table representation is hidden from users of the module */
 typedef struct hheader {
 	queue_t** table;    // an array of queues
 	uint32_t n;          // size of array
 }hheader_t;
+
+
+/* 
+ * - prints message to screen with a prefix that includes file name
+ * - only prints to screen when print_message is true
+ */
+static void print(char *message) {
+	if (print_message) {
+		fprintf(stderr,"~hash.c -> ");
+		fprintf(stderr,"%s\n", message);
+	}
+}
 
 
 /* 
@@ -74,7 +88,7 @@ hashtable_t *hopen(uint32_t hsize) {
 	uint32_t i;
 
 	if (hsize<1) {
-		fprintf(stderr,"Error. Cannot make hash table with size < 1.\n");
+		print("hopen():\tError. Cannot make hash table with size < 1.");
 		return NULL;
 	}
 	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
@@ -90,6 +104,8 @@ hashtable_t *hopen(uint32_t hsize) {
 	for ( i=0; i<hp->n; i++ ) {
 		hp->table[i] = qopen();
 	}
+
+	print("hopen():\tTable successfully created and returned.");
 	
 	return (hashtable_t*)hp;
 }
@@ -108,6 +124,9 @@ void hclose(hashtable_t *htp) {
 		}
 		free(hp->table);
 		free(hp);  //free header
+		print("hclose():\tTable successfully closed.");
+	} else {
+		print("hclose():\tError. Provided table pointer is NULL.");
 	}
 }
 
@@ -120,10 +139,12 @@ int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
 	uint32_t slot;
 
 	// check that all pointers are defined
-	if (htp == NULL || ep == NULL || key == NULL)
+	if (htp == NULL || ep == NULL || key == NULL) {
+		print("hput():\tError. One or more inputs are NULL.");
 		return 1;
+	}
 	if (keylen < 1) {
-		fprintf(stderr,"Error. Key must have length > 0.\n");
+		print("hput():\tError. Key must have length > 0.");
 		return 1;
 	}
 
@@ -133,9 +154,10 @@ int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
 
 	// add element to corresponding queue
 	if ( qput((hp->table)[slot], ep) != 0) {
-		fprintf(stderr,"Error. Failed to add data to queue in hash table.\n");
+		print("hput():\tError. Failed to add data to queue in hash table.");
 		return 1;
 	}
+	print("hput():\tSuccessfully placed item in table.");
 	return 0;
 }
 
@@ -151,6 +173,9 @@ void happly(hashtable_t *htp, void (*fn)(void* ep)) {
 		for ( i=0; i<hp->n; i++ ) {     // for each queue in table
 			qapply((hp->table)[i], fn);   // apply function to every element in queue
 		}
+		print("happly():\tFunction successfully applied to all elements.");
+	} else {
+		print("happly():\tError. One or more inputs are NULL.");
 	}
 }
 
@@ -165,14 +190,18 @@ void *hsearch(hashtable_t *htp,
 	hheader_t *hp;
 	uint32_t slot;
 
-	if ( htp == NULL || searchfn == NULL || key == NULL )
+	if ( htp == NULL || searchfn == NULL || key == NULL ) {
+		print("happly():\tError. One or more inputs are NULL.");
 		return NULL;
-	if ( keylen < 1 )
+	}
+	if ( keylen < 1 ) {
+		print("happly():\tError. Key must have length > 0.");
 		return NULL;
-	
+	}
 	hp = (hheader_t*)htp;
 	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
-	
+
+	print("happly():\tReturning result of qsearch().");
 	return qsearch((hp->table)[slot], searchfn, key);  // qsearch returns element
 }
 
@@ -187,13 +216,17 @@ void *hremove(hashtable_t *htp,
 	hheader_t *hp;
 	uint32_t slot;
 
-	if ( htp == NULL || searchfn == NULL || key == NULL )
+	if ( htp == NULL || searchfn == NULL || key == NULL ) {
+		print("hremove():\tError. One or more inputs are NULL.");
 		return NULL;
-	if ( keylen < 1 )
+	}
+	if ( keylen < 1 ) {
+		print("hremove():\tError. Key must have length > 0.");
 		return NULL;
-	
+	}
 	hp = (hheader_t*)htp;
 	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
-	
+
+	print("hremove():\tReturning result of qremove().");
 	return qremove((hp->table)[slot], searchfn, key);  // qremove removes and  returns element
 }
