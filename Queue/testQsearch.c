@@ -65,11 +65,11 @@ int main (void) {
 	// test with NULLs
 	c = qsearch(NULL, NULL, NULL);
 	if (c != NULL) result++;
-	qsearch(NULL, fn, (void*)("randomString"));
+	c = qsearch(NULL, fn, (void*)("randomString"));
 	if (c != NULL) result++;
-	qsearch((queue_t*)qp, NULL, (void*)("randomString"));
+	c = qsearch((queue_t*)qp, NULL, (void*)("randomString"));
 	if (c != NULL) result++;
-	qsearch((queue_t*)qp, fn, NULL);
+	c = qsearch((queue_t*)qp, fn, NULL);
 	if (c != NULL) result++;
 
 	if ( result > 0 ) {
