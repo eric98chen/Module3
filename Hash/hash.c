@@ -15,7 +15,7 @@ static bool print_message = true; // control printing to screen
 
 /* the hash table representation is hidden from users of the module */
 typedef struct hheader {
-	queue_t** table;    // an array of queues
+	queue_t** table;    // an array of queue_t pointers (array of addresses that will eventually point to queue_t objects)
 	uint32_t n;          // size of array
 }hheader_t;
 
@@ -40,7 +40,7 @@ static void print(char *message) {
  * function used all over the place nowadays, including Google Sparse
  * Hash.
  */
-static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
+static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) { //each hput needs same char *data and int len??
   uint32_t hash = len, tmp;
   int rem;
   
@@ -91,10 +91,10 @@ hashtable_t *hopen(uint32_t hsize) {
 		print("hopen():\tError. Cannot make hash table with size < 1.");
 		return NULL;
 	}
-	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
+	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL ) //malloc memory for a hheader_t object
 		return NULL;
 	
-	if ( (hp->table = (queue_t*)malloc(sizeof(queue_t*) * hsize)) == NULL ) {
+	if ( (hp->table = (queue_t*)malloc(sizeof(queue_t*) * hsize)) == NULL ) { //malloc enough memory to hold hsize # of queue_t
 		free(hp);
 		return NULL;
 	}
@@ -102,7 +102,7 @@ hashtable_t *hopen(uint32_t hsize) {
 
 	/* initialize each pointer in hash table with empty queue_t */
 	for ( i=0; i<hp->n; i++ ) {
-		hp->table[i] = qopen();
+		hp->table[i] = qopen(); //table[i] is address of ith queue_t* pointer
 	}
 
 	print("hopen():\tTable successfully created and returned.");
@@ -119,8 +119,8 @@ void hclose(hashtable_t *htp) {
 	if (htp != NULL) {
 		hp = (hheader_t*)htp;
 		
-		for ( i=0; i<hp->n; i++ ) {  // for all slots in table
-			qclose((hp->table)[i]);    // close queue
+		for ( i=0; i<hp->n; i++ ) {  // for all queues in table
+			qclose((hp->table)[i]);    // close each queue (hp->table[i] = address to queue_t object)
 		}
 		free(hp->table);
 		free(hp);  //free header
@@ -148,9 +148,9 @@ int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen) {
 		return 1;
 	}
 
-	hp = (hheader_t*)htp;
+	hp = (hheader_t*)htp; //create hash table
 
-	slot = SuperFastHash(key, keylen, hp->n);  // use hash function
+	slot = SuperFastHash(key, keylen, hp->n);  //use hash function (key from element,length of key from element,hash table size)
 
 	// add element to corresponding queue
 	if ( qput((hp->table)[slot], ep) != 0) {
@@ -186,23 +186,27 @@ void happly(hashtable_t *htp, void (*fn)(void* ep)) {
  */
 void *hsearch(hashtable_t *htp, 
 							bool (*searchfn)(void* elementp, const void* searchkeyp), 
-							const char *key, int32_t keylen) {
+							const char *key, 
+							int32_t keylen) {
 	hheader_t *hp;
 	uint32_t slot;
 
-	if ( htp == NULL || searchfn == NULL || key == NULL ) {
-		print("happly():\tError. One or more inputs are NULL.");
+	if ( htp == NULL || searchfn == NULL || key == NULL || searchkeyp == NULL) {
+		print("hsearcj():\tError. One or more inputs are NULL.");
 		return NULL;
 	}
 	if ( keylen < 1 ) {
-		print("happly():\tError. Key must have length > 0.");
+		print("hsearch():\tError. Key must have length > 0.");
 		return NULL;
 	}
+	
 	hp = (hheader_t*)htp;
-	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
+	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key -> determines which queue to look into
+	
+	print("hsearch():\tReturning result of hsearch().");
+	void* nodeMatch = qsearch((hp->table)[slot], searchfn, key) //qsearch returns pointer to matching element in queue
+	return nodeMatch; 
 
-	print("happly():\tReturning result of qsearch().");
-	return qsearch((hp->table)[slot], searchfn, key);  // qsearch returns element
 }
 
 
@@ -227,6 +231,6 @@ void *hremove(hashtable_t *htp,
 	hp = (hheader_t*)htp;
 	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
 
-	print("hremove():\tReturning result of qremove().");
+	print("hremove():\tReturning result of hremove().");
 	return qremove((hp->table)[slot], searchfn, key);  // qremove removes and  returns element
 }
