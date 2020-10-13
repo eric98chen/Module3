@@ -293,17 +293,21 @@ void qconcat(queue_t *q1p, queue_t *q2p){
 
 	if ((q1p == NULL) || (q2p == NULL)) {	
 		printf("Queue is NULL\n");
-	} else {
+	} 
+	else {
 	
 		hp1 = (qheader_t*)q1p;
 		hp2 = (qheader_t*)q2p;
 	
 		if (hp2->front == NULL) {
 			free(hp2);
-		}	else if (hp1->front == NULL) {
+		}	
+		else if (hp1->front == NULL) {
 			hp1->front = hp2->front;
 			hp1->back = hp2->back;
-		} else {
+			//need to free hp2?
+		} 
+		else {
 			(hp1->back)->next = hp2->front;
 			hp1->back = hp2->back;
 			free(hp2);
