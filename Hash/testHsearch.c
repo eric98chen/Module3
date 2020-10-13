@@ -1,6 +1,6 @@
-/* testQsearch.c -- test qsearch() in queue.c
+/* testHsearch.c -- test hsearch() in hash.c
  *
- * Author: David Domonoske
+ * Author: Eric Chen
  * Created: Mon Oct 12, 2020
  * Version:
  *
@@ -131,7 +131,7 @@ int main (void) {
 	} else printf("hsearch successful!\n");
 	
 	
-	hclose(hp);
+	hclose(hp); //should free everything in hash table
 	
 	exit(EXIT_SUCCESS);
 }

@@ -1,6 +1,6 @@
-/* testQsearch.c -- test qsearch() in queue.c
+/* testHremove.c -- test hremove() in hash.c
  *
- * Author: David Domonoske
+ * Author: Eric Chen
  * Created: Mon Oct 12, 2020
  * Version:
  *
@@ -65,6 +65,7 @@ int main (void) {
 	
 	car_t *cp[5];
 	car_t *c = NULL;
+	car_t *cp1, *cp2, *cp3;
 	
 	// test with NULLS and keylen < 1
 	c = hremove(NULL, NULL, NULL, 10); //HREMOVE requires (*htp, *searchfn, char *key, keylen)
@@ -105,11 +106,11 @@ int main (void) {
 
 
 	// test successful match cases
-	c = hremove(hp, fn, cp[0]->plate, strlen(cp[0]->plate)); //HREMOVE requires (*htp, *searchfn, char *key, keylen)
+	cp1 = hremove(hp, fn, cp[0]->plate, strlen(cp[0]->plate)); //HREMOVE requires (*htp, *searchfn, char *key, keylen)
 	if ( c != cp[0] ) result ++;
-	c = hremove(hp, fn, cp[1]->plate, strlen(cp[1]->plate));
+	cp2 = hremove(hp, fn, cp[1]->plate, strlen(cp[1]->plate));
 	if ( c != cp[1] ) result ++;
-	c = hremove(hp, fn, cp[2]->plate, strlen(cp[2]->plate)); //removing last element from hashtable
+	cp3 = hremove(hp, fn, cp[2]->plate, strlen(cp[2]->plate)); //removing last element from hashtable
 	if ( c != cp[2] ) result ++;
 	
 	//printf("result is %d\n", result); //result>0 if any of the hsearch failed
@@ -131,6 +132,9 @@ int main (void) {
 		exit(EXIT_FAILURE);
 	} else printf("hremove successful!\n");
 	
+	free(cp1); //need to free pointers for elements that were removed from hash table
+	free(cp2);
+	free(cp3);
 	
 	hclose(hp);
 	
