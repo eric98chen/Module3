@@ -320,9 +320,7 @@ void qconcat(queue_t *q1p, queue_t *q2p){
 		else if (hp1->front == NULL) {
 			hp1->front = hp2->front;
 			hp1->back = hp2->back;
-			free(hp2);
-		} 
-		else {
+		} else {
 			(hp1->back)->next = hp2->front;
 			hp1->back = hp2->back;
 			free(hp2);
