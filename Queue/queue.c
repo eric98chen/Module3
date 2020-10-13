@@ -241,47 +241,62 @@ void* qremove(queue_t *qp,
 							bool (*searchfn)(void* elementp,const void* keyp),
 							const void* skeyp){
 	qheader_t *hp;
-	node_t *prev;
-	node_t *curr;
+	node_t *prev, *curr; //pointers to help restitch list after an element is removed
 	bool result;
 	void *tmp;
 	
-	if (qp == NULL) {	
+	if (qp == NULL) {	//check inputs
 		printf("Queue is NULL\n");
 		return NULL;
 	}
-	hp = (qheader_t*)qp;
-	
 	if (searchfn==NULL) {
 		printf("Error. Function is NULL\n");
 		return NULL;
 	}
+	
+	hp = (qheader_t*)qp;
+	
 	if (hp->front==NULL) {
 		printf("Queue is empty\n");
 		return NULL;
 	}
 	else {
-		printf("Applying function to every element of the queue.\n");
+		printf("Applying search function to the queue.\n");
 
-		curr = hp->front;
-		while (curr != NULL){
-			prev = curr;
-			if(prev->data != NULL){
-				if ((result = searchfn(prev->data, skeyp)) == true){
-					tmp = prev->data;
-					//if(prev->data != NULL){ //cant free data here. Causes memory issue. Instead, free in test main
-					//	free(prev->data);
-					//}
-					free(prev); //OK to free prev, bc refers to the node_t *next pointer, not the data returned
-					printf("Searched element removed and returned\n");
-					return tmp; //returns first element
+		curr = hp->front; //start at fromt of queue
+		
+		while (curr != NULL){ //loop until reach end of queue,
+	
+			if(curr->data != NULL){ //if node has data, then check for match
+				if ((result = searchfn(prev->data, skeyp)) == true){ //IF MATCH FOUND
+									
+					printf("Searched element found, removed, and returned\n");
+
+					if(curr==hp->front) { //if match is first node
+						hp->front = hp->front->next;//removes node from list (by updating front to point to 2nd node)
+						tmp = curr->data; 			//capture matching data
+						free(curr); 				//free matching node (now removed from list)
+						return tmp; 				//returns matching data
+					}
+					else { //if match is not first node (at this point already ran through while loop once)
+						prev->next = curr->next; 	//removes node from list (by skipping over)
+						tmp = curr->data; 			//capture matching data
+						free(curr);					//free matching node (now removed from list)
+						return tmp;					//return matching data
+					}
+				}
+				else {	//IF NODE IS NOT A MATCH
+					prev = curr; //keep track of previous node (s.t. prev is always 1 node behind curr)
+					curr = curr->next; //update curr to next node
 				}
 			}
-			curr = prev->next;
+			else printf("A node is missing data\n"); //only executes if curr->data == NULL
+
 		}
 		return NULL;
 	}						
 }
+
 
 
 /* concatenatenates elements of q2 into q1
@@ -293,22 +308,24 @@ void qconcat(queue_t *q1p, queue_t *q2p){
 
 	if ((q1p == NULL) || (q2p == NULL)) {	
 		printf("Queue is NULL\n");
-	} else {
+	} 
+	else {
 	
 		hp1 = (qheader_t*)q1p;
 		hp2 = (qheader_t*)q2p;
 	
 		if (hp2->front == NULL) {
 			free(hp2);
-		}	else if (hp1->front == NULL) {
+		}	
+		else if (hp1->front == NULL) {
 			hp1->front = hp2->front;
 			hp1->back = hp2->back;
-		} else {
+			free(hp2);
+		} 
+		else {
 			(hp1->back)->next = hp2->front;
 			hp1->back = hp2->back;
 			free(hp2);
 		}
 	}
 }
-
-

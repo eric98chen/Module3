@@ -85,7 +85,6 @@ static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
 /* hopen -- opens a hash table with initial size hsize */
 hashtable_t *hopen(uint32_t hsize) {
 	hheader_t *hp;
-	queue_t *q;   // temporary, only used in sizeof() to malloc array
 	uint32_t i;
 
 	if (hsize<1) {
@@ -94,20 +93,16 @@ hashtable_t *hopen(uint32_t hsize) {
 	}
 	if ( (hp = (hheader_t*)malloc(sizeof(hheader_t))) == NULL )
 		return NULL;
-	q = qopen();
-	if (q == NULL)
-		return NULL;
-	if ( (hp->table = (queue_t**)malloc(sizeof(q) * hsize)) == NULL ) {
+	
+	if ( (hp->table = (queue_t*)malloc(sizeof(queue_t*) * hsize)) == NULL ) {
 		free(hp);
-		free(q);
 		return NULL;
 	}
-	free(q);
 	hp->n = hsize;
 
 	/* initialize each pointer in hash table with empty queue_t */
 	for ( i=0; i<hp->n; i++ ) {
-		(hp->table)[i] = qopen();
+		hp->table[i] = qopen();
 	}
 
 	print("hopen():\tTable successfully created and returned.");
@@ -127,6 +122,7 @@ void hclose(hashtable_t *htp) {
 		for ( i=0; i<hp->n; i++ ) {  // for all slots in table
 			qclose((hp->table)[i]);    // close queue
 		}
+		free(hp->table);
 		free(hp);  //free header
 		print("hclose():\tTable successfully closed.");
 	} else {
