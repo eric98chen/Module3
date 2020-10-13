@@ -294,6 +294,7 @@ void* qremove(queue_t *qp,
 			}
 			else printf("A node is missing data\n"); //only executes if curr->data == NULL
 		}
+		printf("No match found\n"); //only occurs if while loop finishes and no match trigger a return
 		return NULL;
 	}						
 }
