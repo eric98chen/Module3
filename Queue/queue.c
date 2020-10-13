@@ -264,23 +264,25 @@ void* qremove(queue_t *qp,
 		printf("Applying search function to the queue.\n");
 
 		curr = hp->front; //start at fromt of queue
-		
+
 		while (curr != NULL){ //loop until reach end of queue,
-	
 			if(curr->data != NULL){ //if node has data, then check for match
-				if ((result = searchfn(prev->data, skeyp)) == true){ //IF MATCH FOUND
-									
+				if ((result = searchfn(curr->data, skeyp)) == true){ //IF MATCH FOUND
 					printf("Searched element found, removed, and returned\n");
 
 					if(curr==hp->front) { //if match is first node
-						hp->front = hp->front->next;//removes node from list (by updating front to point to 2nd node)
+						hp->front = curr->next;//removes node from list (by updating front to point to 2nd node)
 						tmp = curr->data; 			//capture matching data
+						if (curr==hp->back)  // if queue has single element
+							hp->back = NULL;
 						free(curr); 				//free matching node (now removed from list)
 						return tmp; 				//returns matching data
 					}
 					else { //if match is not first node (at this point already ran through while loop once)
 						prev->next = curr->next; 	//removes node from list (by skipping over)
 						tmp = curr->data; 			//capture matching data
+						if (curr==hp->back)  // if match is end of queue
+							hp->back = prev;
 						free(curr);					//free matching node (now removed from list)
 						return tmp;					//return matching data
 					}
@@ -291,7 +293,6 @@ void* qremove(queue_t *qp,
 				}
 			}
 			else printf("A node is missing data\n"); //only executes if curr->data == NULL
-
 		}
 		return NULL;
 	}						
