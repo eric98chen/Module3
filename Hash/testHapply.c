@@ -69,7 +69,7 @@ void fn(void *p) {
 	car_t *cp = (car_t*)p;
 	cp->year = 0;
 }
-	
+
  
 int main (void) {
 
@@ -77,46 +77,43 @@ int main (void) {
 	uint32_t hsize = 20;
 
 	hashtable_t *hp; //agnostic hashtable, can hold cars and students
-	hashtable_t *hpNULL = NULL; //dumby hashtable
 	
-	car_t *cp1, *cp2, *cp3;
+	car_t *cp[3];
 	
-	// TEST HOPEN
 	hp = hopen(hsize); //returns pointer to newly created hashtable_t
-	if (hp == NULL) {
-		printf("hopen returns NULL when should have opened successfully\n");
-		exit(EXIT_FAILURE);
-	}
-	else printf("hopen successful\n\n");
 	
+	cp[0] = make_car("car1", 1.0, 1910); //declare all cars
+	cp[1] = make_car("car2", 4.0, 1940);
+	cp[2] = make_car("car3", 9.0, 1990);
 	
-	// TEST HPUT
-	cp1 = make_car("car1", 1.0, 1910); //declare all cars
-	cp2 = make_car("car2", 4.0, 1940);
-	cp3 = make_car("car3", 9.0, 1990);
+	// test with NULLs
+	happly(NULL, NULL);
+	happly(NULL, fn);
+	happly((hashtable_t*)hp, NULL);
+	
+	// test with empty queue, should print queue is empty
+	happly((hashtable_t*)hp, fn);
 	
 	result = 0;
-	result += hput(hp, (void*)cp1, cp1->plate, strlen(cp1->plate)); //put to empty queue (returns 1 if any error)
-	result += hput(hp, (void*)cp2, cp2->plate, strlen(cp2->plate)); //put into non-empty queue
-	result += hput(hp, (void*)cp3, cp3->plate, strlen(cp3->plate));
+	result += hput(hp, (void*)cp[0], cp[0]->plate, strlen(cp[0]->plate)); //put to empty queue (returns 1 if any error)
+	result += hput(hp, (void*)cp[1], cp[1]->plate, strlen(cp[1]->plate)); //put into non-empty queue
+	result += hput(hp, (void*)cp[2], cp[2]->plate, strlen(cp[2]->plate));
+
+	happly((hashtable_t*)hp, fn); //test with non-empty queue, should print "Applying function,,,"
+
+	for (int i=0; i<3; i++ ) {
+		if ( cp[i]->year != 0 )
+			result++;
+	}
 
 	if ( result > 0 ) {
-		printf("hput error \n");
-		hclose(hp);	//need to free memory of everything already put into hash
+		fprintf(stderr, "happly failed to implement on non-empty queue\n");
+		hclose(hp);
 		exit(EXIT_FAILURE);
 	}
-	else printf("hput cases successful\n\n");
-	
-	cp1->year = 0000; //can directly alter the data stored queue from this main code
- 	
- 
-	// TEST HCLOSE
-	hclose(hpNULL); //close a NULL queue
-	printf(">>hclose (hpNULL) occurred as expected\n");
+	else printf("happly successful");
 
 	hclose(hp);
-	printf("hclose successful\n\n");
-	
 	
 	exit(EXIT_SUCCESS);
 }
