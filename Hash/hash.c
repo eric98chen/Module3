@@ -216,7 +216,8 @@ void *hsearch(hashtable_t *htp,
  */
 void *hremove(hashtable_t *htp, 
 							bool (*searchfn)(void* elementp, const void* searchkeyp), 
-							const char *key, int32_t keylen) {
+							const char *key, 
+							int32_t keylen) {
 	hheader_t *hp;
 	uint32_t slot;
 
@@ -228,9 +229,14 @@ void *hremove(hashtable_t *htp,
 		print("hremove():\tError. Key must have length > 0.");
 		return NULL;
 	}
+	
 	hp = (hheader_t*)htp;
 	slot = SuperFastHash(key, keylen, hp->n);  // get slot based on key
 
 	print("hremove():\tReturning result of hremove().");
-	return qremove((hp->table)[slot], searchfn, key);  // qremove removes and  returns element
+	void *nodeMatch = qremove((hp->table)[slot], searchfn, key);  // qremove removes and  returns element
+	return nodeMatch;
 }
+
+
+
