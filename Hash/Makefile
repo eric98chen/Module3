@@ -1,17 +1,18 @@
 CFLAGS=-Wall -pedantic -std=c11 -I. -g
 
-all:			hash.o #chrisTest test1to4
+all:			test1to3 
 
-hash.o: 			hash.c hash.h
+hash.o: 			hash.c hash.h queue.h
 					gcc $(CFLAGS) -c hash.c
 
-queue.o:			queue.c queue.h
+queue.o:			queue.c queue.h 
 					gcc $(CFLAGS) -c queue.c
-#chrisTest.o:	chrisTest.c queue.h
-#					gcc $(CFLAGS) -c chrisTest.c
 
-#chrisTest:		chrisTest.o queue.o
-#					gcc $(CFLAGS) chrisTest.o queue.o -o chrisTest
+test1to3.o:	test1to3.c hash.h queue.h
+					gcc $(CFLAGS) -c test1to3.c
+
+test1to3:		test1to3.o hash.o queue.o
+					gcc $(CFLAGS) test1to3.o hash.o queue.o -o test1to3
 
 clean:			
-					rm -f *.o #chrisTest test1to4
+					rm -f *.o test1to3 
