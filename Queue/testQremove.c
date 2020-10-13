@@ -56,24 +56,24 @@ bool fn(void* p, const void* keyp) {
 
 int main (void) {
 	queue_t *qp; //agnostic queue
-	car_t *cp[3];
+	car_t *cp[5];
 	car_t *c = NULL;
 	int32_t result=0;
 	
 	qp = qopen(); //returns pointer to newly created queue_t
 
 	// test with NULLs
-	c = qsearch(NULL, NULL, NULL);
+	c = qremove(NULL, NULL, NULL);
 	if (c != NULL) result++;
-	qsearch(NULL, fn, (void*)("randomString"));
+	qremove(NULL, fn, (void*)("randomString"));
 	if (c != NULL) result++;
-	qsearch((queue_t*)qp, NULL, (void*)("randomString"));
+	qremove((queue_t*)qp, NULL, (void*)("randomString"));
 	if (c != NULL) result++;
-	qsearch((queue_t*)qp, fn, NULL);
+	qremove((queue_t*)qp, fn, NULL);
 	if (c != NULL) result++;
 
 	if ( result > 0 ) {
-		fprintf(stderr, "Error while searching with NULL inputs\n");
+		fprintf(stderr, "ERROR while removing with NULL inputs\n");
 		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
@@ -82,39 +82,50 @@ int main (void) {
 	cp[0] = make_car("car1", 1.0, 1910);
 	cp[1] = make_car("car2", 4.0, 1940);
 	cp[2] = make_car("car3", 9.0, 1990);
+	cp[3] = make_car("car4", 29.0, 1995);
+	cp[4] = make_car("car5", 91.0, 1999);
 	
 	// test with empty queue
-	qsearch((queue_t*)qp, fn, (void*)("randomString"));
-	
+	c = qremove((queue_t*)qp, fn, (void*)("randomString"));
+	if (c != NULL) {
+		fprintf(stderr, "ERROR while removing from empty queue.\n");
+		qclose(qp);
+		exit(EXIT_FAILURE);
+	}
+
+	// add cars to queue
 	result += qput(qp, (void*)cp[0]);
 	result += qput(qp, (void*)cp[1]);
 	result += qput(qp, (void*)cp[2]);
-
+	
 	if ( result > 0 ) {
-		fprintf(stderr, "Error while adding cars to queue\n");
+		fprintf(stderr, "ERROR while adding cars to queue\n");
 		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
 
 	// test successful match cases
-	c = qsearch((queue_t*)qp, fn, cp[0]->plate);
+	c = qremove((queue_t*)qp, fn, cp[0]->plate);
 	if ( c != cp[0] ) result ++;
-	c = qsearch((queue_t*)qp, fn, cp[1]->plate);
-	if ( c != cp[1] ) result ++;
-	c = qsearch((queue_t*)qp, fn, cp[2]->plate);
+	c = qremove((queue_t*)qp, fn, cp[2]->plate);
 	if ( c != cp[2] ) result ++;
+	c = qremove((queue_t*)qp, fn, cp[1]->plate);
+	if ( c != cp[1] ) result ++;
 	
 	if ( result > 0 ) {
-		fprintf(stderr, "qsearch failed when it should have matched\n");
+		fprintf(stderr, "ERROR. qremove failed when it should have matched\n");
 		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
-
-	c = qsearch((queue_t*)qp, fn, "not_a_match");
+	
+	result += qput(qp, (void*)cp[3]);
+	result += qput(qp, (void*)cp[4]);
+	
+	c = qremove((queue_t*)qp, fn, "not_a_match");
 	if ( c != NULL ) result ++;
 	
 	if ( result > 0 ) {
-		fprintf(stderr, "qsearch failed when it should have not matched\n");
+		fprintf(stderr, "ERROR. qremove failed when it should have not matched\n");
 		qclose(qp);
 		exit(EXIT_FAILURE);
 	}
